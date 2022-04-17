@@ -1,9 +1,8 @@
-import { Message } from 'discord.js';
-import { IBot } from '../../bot';
 import Command from '../../command';
+import Context from '../../context';
 
 export default class Elections extends Command {
-  async execute(bot: IBot, message: Message, args: string): Promise<void> {
+  async execute({ message, args }: Context): Promise<void> {
     const results: Map<string, number> = new Map();
     let sum = 0;
     for (const candidate of args.split(',')) {

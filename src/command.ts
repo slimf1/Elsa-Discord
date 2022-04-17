@@ -1,8 +1,8 @@
-import { GuildMember, Message } from 'discord.js';
-import { IBot } from './bot';
+import { GuildMember } from 'discord.js';
+import Context from './context';
 
 export default abstract class Command {
-  abstract execute(bot: IBot, message: Message, args: string): Promise<void>;
+  abstract execute(context: Context): Promise<void>;
   abstract name(): string;
   description(): string {
     return '';

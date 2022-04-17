@@ -1,10 +1,9 @@
-import { Message } from 'discord.js';
-import { IBot } from '../../bot';
 import Command from '../../command';
+import Context from '../../context';
 
 export default class Ping extends Command {
 
-  async execute(bot: IBot, message: Message): Promise<void> {
+  async execute({ message }: Context): Promise<void> {
     await message.reply('Pong.');
   }
 

@@ -1,10 +1,10 @@
 import { exec } from 'child_process';
-import { GuildMember, Message } from 'discord.js';
-import { IBot } from '../../bot';
+import { GuildMember } from 'discord.js';
 import Command from '../../command';
+import Context from '../../context';
 
 export default class Update extends Command {
-  async execute(bot: IBot, message: Message): Promise<void> {
+  async execute({ message }: Context): Promise<void> {
     exec('git pull origin master', async (err, stdout, stderr) => {
       if (err) {
         await message.reply(`Error: ${err}`);

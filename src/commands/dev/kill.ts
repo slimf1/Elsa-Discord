@@ -1,9 +1,9 @@
-import { GuildMember, Message } from 'discord.js';
-import { IBot } from '../../bot';
+import { GuildMember } from 'discord.js';
 import Command from '../../command';
+import Context from '../../context';
 
 export default class Kill extends Command {
-  async execute(bot: IBot, message: Message): Promise<void> {
+  async execute({ message }: Context): Promise<void> {
     await message.reply('Killing bot...');
     process.exit(0);
   }

@@ -1,11 +1,10 @@
-import { Message } from 'discord.js';
-import { IBot } from '../../bot';
 import Command from '../../command';
 import loadCommands from '../../command-loader';
 import { exec } from 'child_process';
+import Context from '../../context';
 
 export default class HotReload extends Command {
-  async execute(bot: IBot, message: Message): Promise<void> {
+  async execute({ bot, message }: Context): Promise<void> {
     try {
       exec('npm run build', async () => {
         bot.commands = await loadCommands();

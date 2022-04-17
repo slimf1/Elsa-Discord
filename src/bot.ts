@@ -1,5 +1,6 @@
 import { Client, Message } from 'discord.js';
 import Command from './command';
+import Context from './context';
 
 // TODO: git based auto update on remote
 
@@ -37,7 +38,7 @@ export class Bot implements IBot {
       if (this.commands.has(command)) {
         const commandInstance = this.commands.get(command);
         if (commandInstance?.canExecute(message.member)) {
-          await commandInstance.execute(this, message, args);
+          await commandInstance.execute(new Context(this, message, args));
         }
       }
     }
