@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pkmn/dex": "^0.5.14",
     "decache": "^4.6.1",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",

@@ -9,7 +9,7 @@ export default abstract class Command {
   }
   canExecute(member: GuildMember | null): boolean {
     if (this.isMaintainerOnly()) {
-      return member !== null && member.id === process.env.MAINTAINER;
+      return member?.id === process.env.MAINTAINER;
     }
     const authorizedRoles = process.env.AUTHORIZED_ROLES?.split(';');
     return !!authorizedRoles
