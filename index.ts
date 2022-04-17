@@ -3,8 +3,9 @@ import loadCommands from './src/command-loader';
 import dotenv from 'dotenv';
 import { Bot } from './src/bot';
 
+dotenv.config();
+
 async function run() {
-  dotenv.config();
   const commands = await loadCommands();
   const client = new Client({
     intents: [
