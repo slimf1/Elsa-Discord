@@ -3,7 +3,7 @@ import { GuildMember } from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
 
-export default class Update extends Command {
+class Update extends Command {
   async execute({ message }: Context): Promise<void> {
     exec('git pull origin master', async (err, stdout, stderr) => {
       if (err) {
@@ -27,3 +27,7 @@ export default class Update extends Command {
       && member?.id === process.env.MAINTAINER;
   }
 }
+
+export default {
+  commands: [Update]
+};

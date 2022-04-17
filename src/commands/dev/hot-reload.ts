@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 import Context from '../../context';
 import { GuildMember } from 'discord.js';
 
-export default class HotReload extends Command {
+class HotReload extends Command {
   async execute({ bot, message }: Context): Promise<void> {
     try {
       exec('npm run build', async () => {
@@ -29,3 +29,7 @@ export default class HotReload extends Command {
       && member?.id === process.env.MAINTAINER;
   }
 }
+
+export default {
+  commands: [HotReload]
+};

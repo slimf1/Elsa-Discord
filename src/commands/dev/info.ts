@@ -1,7 +1,7 @@
 import Command from '../../command';
 import Context from '../../context';
 
-export default class Info extends Command {
+class Info extends Command {
   async execute({ bot, message }: Context): Promise<void> {
     const botName = bot.client.user?.username;
     const maintainerName = bot.client.users.cache.get(process.env.MAINTAINER ?? '')?.username;
@@ -15,3 +15,7 @@ export default class Info extends Command {
     return 'info';
   }
 }
+
+export default {
+  commands: [Info]
+};

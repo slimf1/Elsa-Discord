@@ -2,7 +2,7 @@ import { GuildMember } from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
 
-export default class Kill extends Command {
+class Kill extends Command {
   async execute({ message }: Context): Promise<void> {
     await message.reply('Killing bot...');
     process.exit(0);
@@ -15,3 +15,7 @@ export default class Kill extends Command {
       && member?.id === process.env.MAINTAINER;
   }
 }
+
+export default {
+  commands: [Kill]
+};

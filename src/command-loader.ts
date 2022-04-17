@@ -23,8 +23,11 @@ export default async function loadCommands(): Promise<Map<string, Command>> {
     const commandFile = path.join(__dirname, file.substring(9));
     decache(commandFile);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const command = new (require(commandFile).default) as Command;
-    commands.set(command.name(), command);
+    const commandModule = require(commandFile).default as Module;
+    for (const commandType of commandModule.commands || []) {
+      const command = new commandType;
+      commands.set(command.name(), command);
+    }
   }
   return commands;
 }

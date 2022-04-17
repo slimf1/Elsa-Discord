@@ -1,7 +1,7 @@
 import Command from '../../command';
 import Context from '../../context';
 
-export default class Elections extends Command {
+class Elections extends Command {
   async execute({ message, args }: Context): Promise<void> {
     const results: Map<string, number> = new Map();
     let sum = 0;
@@ -25,3 +25,7 @@ export default class Elections extends Command {
     return 'Returns elections.';
   }
 }
+
+export default {
+  commands: [Elections]
+};

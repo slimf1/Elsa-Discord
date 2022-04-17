@@ -1,7 +1,7 @@
 import Command from '../../command';
 import Context from '../../context';
 
-export default class Ping extends Command {
+class Ping extends Command {
 
   async execute({ message }: Context): Promise<void> {
     await message.reply('Pong.');
@@ -15,3 +15,7 @@ export default class Ping extends Command {
     return 'Returns pong.';
   }
 }
+
+export default {
+  commands: [Ping]
+};
