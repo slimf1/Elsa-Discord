@@ -9,7 +9,7 @@ export default class HotReload extends Command {
     try {
       exec('npm run build', async () => {
         bot.commands = await loadCommands();
-        message.reply('Reloaded commands.');
+        await message.reply('Reloaded commands.');
       });
     } catch (e) {
       await message.reply('Failed to reload commands: ' + e);
