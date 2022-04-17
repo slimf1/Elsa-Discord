@@ -2,7 +2,6 @@ import Command from '../../command';
 import loadCommands from '../../command-loader';
 import { exec } from 'child_process';
 import Context from '../../context';
-import { GuildMember } from 'discord.js';
 
 class HotReload extends Command {
   async execute({ bot, message }: Context): Promise<void> {
@@ -24,9 +23,8 @@ class HotReload extends Command {
     return 'Reloads commands.';
   }
 
-  override canExecute(member: GuildMember | null): boolean {
-    return super.canExecute(member)
-      && member?.id === process.env.MAINTAINER;
+  override isMaintainerOnly(): boolean {
+    return true;
   }
 }
 
