@@ -37,7 +37,7 @@ export class Bot implements IBot {
       if (this.commands.has(command)) {
         const commandInstance = this.commands.get(command);
         if (commandInstance?.canExecute(message.member)) {
-          commandInstance.execute(this, message, args);
+          await commandInstance.execute(this, message, args);
         }
       }
     }
