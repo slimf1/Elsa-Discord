@@ -7,7 +7,7 @@ export default class Info extends Command {
     const botTag = bot.client.user?.tag;
     const maintainerTag = bot.client.users.cache.get('303548403520897025')?.tag;
     await message
-      .reply(`${botTag}: Bot inutile développé et maintenu par ${maintainerTag}.`);
+      .reply(`@${botTag}: Bot inutile développé et maintenu par @${maintainerTag}.`);
   }
   name(): string {
     return 'info';
