@@ -4,7 +4,7 @@ import Context from '../../context';
 export default class Info extends Command {
   async execute({ bot, message }: Context): Promise<void> {
     const botName = bot.client.user?.username;
-    const maintainerName = bot.client.users.cache.get('303548403520897025')?.username;
+    const maintainerName = bot.client.users.cache.get(process.env.MAINTAINER ?? '')?.username;
     await message
       .reply(
         `**${botName}**: Bot inutile développé et maintenu par **${maintainerName}**.

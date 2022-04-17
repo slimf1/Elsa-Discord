@@ -2,8 +2,6 @@ import { Client, Message } from 'discord.js';
 import Command from './command';
 import Context from './context';
 
-// TODO: git based auto update on remote
-
 export interface IBot {
   client: Client;
   commands: Map<string, Command>;

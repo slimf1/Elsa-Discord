@@ -7,8 +7,10 @@ export default abstract class Command {
   description(): string {
     return '';
   }
-  canExecute(member: GuildMember | null): boolean { // TODO: parameterize these values
-    return (member?.roles.cache.has('964954859679924264')
-         || member?.roles.cache.has('599240075410145301')) ?? false;
+  canExecute(member: GuildMember | null): boolean {
+    const authorizedRoles = process.env.AUTHORIZED_ROLES?.split(';');
+    return !!authorizedRoles
+      && !!member
+      && authorizedRoles.some(role => member.roles.cache.has(role));
   }
 }

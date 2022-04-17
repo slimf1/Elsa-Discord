@@ -24,6 +24,6 @@ export default class Update extends Command {
   }
   override canExecute(member: GuildMember | null): boolean {
     return super.canExecute(member)
-      && member?.id === '303548403520897025'; // TODO: parameterize this value
+      && member?.id === process.env.MAINTAINER;
   }
 }
