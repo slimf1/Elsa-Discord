@@ -35,6 +35,9 @@ export default async function loadCommands(): Promise<Map<string, Command>> {
     for (const commandType of commandModule.commands || []) {
       const command = new commandType;
       commands.set(command.name(), command);
+      for (const alias of command.aliases()) {
+        commands.set(alias, command);
+      }
     }
   }
   return commands;

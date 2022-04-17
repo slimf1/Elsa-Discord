@@ -19,6 +19,10 @@ class HotReload extends Command {
     return 'reload';
   }
 
+  override aliases(): string[] {
+    return ['refresh'];
+  }
+
   override description(): string {
     return 'Reloads commands.';
   }
