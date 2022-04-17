@@ -13,6 +13,14 @@ const deepReadDir = async (dirPath: string): Promise<unknown[]> =>
     }),
   );
 
+export interface Type<T> extends Function {
+  new (...args: unknown[]): T;
+}
+
+export interface Module {
+  commands?: Type<Command>[];
+}
+
 export default async function loadCommands(): Promise<Map<string, Command>> {
   const commands: Map<string, Command> = new Map();
   const files = (await deepReadDir('./dist/src/commands')).flat() as string[];
