@@ -1,0 +1,32 @@
+{
+  "name": "elsa-mina-discord-bot",
+  "version": "0.0.1",
+  "description": "Yet another Discord bot",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "decache": "^4.6.1",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "typescript": "^4.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.24",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "concurrently": "^7.1.0",
+    "eslint": "^8.13.0",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0"
+  }
+}
