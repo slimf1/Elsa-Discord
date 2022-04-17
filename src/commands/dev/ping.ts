@@ -5,7 +5,7 @@ import Command from '../../command';
 export default class Ping extends Command {
 
   async execute(bot: IBot, message: Message): Promise<void> {
-    await message.reply('pong!');
+    await message.reply('Pong.');
   }
 
   name(): string {
