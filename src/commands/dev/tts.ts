@@ -1,8 +1,8 @@
 import Command from '../../command';
-import context from '../../context';
+import Context from '../../context';
 
 class TTS extends Command {
-  async execute({ message, args }: context): Promise<void> {
+  async execute({ message, args }: Context): Promise<void> {
     await message.channel.send({ content: args, tts: true });
   }
 
