@@ -1,23 +1,25 @@
 import Command from '../../command';
-import context from '../../context';
+import Context from '../../context';
 import { Dex, Species } from '@pkmn/dex';
 import { choice } from '../../utils/rand';
 import { Canvas, loadImage } from 'canvas';
 import { MessageAttachment, ReplyMessageOptions } from 'discord.js';
 
 class RandPoke extends Command {
+  private static readonly IMAGE_WIDTH = 96;
+  private static readonly IMAGE_HEIGHT = 96;
 
-  static async loadCanvas(pokemon: Species): Promise<Canvas> {
-    const canvas = new Canvas(96, 96);
+  private static async loadCanvas(pokemon: Species): Promise<Canvas> {
+    const canvas = new Canvas(RandPoke.IMAGE_WIDTH, RandPoke.IMAGE_HEIGHT);
     const context = canvas.getContext('2d');
     const image = await loadImage(
       `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.num}.png`
     );
-    context.drawImage(image, 0, 0, 96, 96);
+    context.drawImage(image, 0, 0, RandPoke.IMAGE_WIDTH, RandPoke.IMAGE_HEIGHT);
     return canvas;
   }
 
-  async execute({ message }: context): Promise<void> {
+  async execute({ message }: Context): Promise<void> {
     const pokemon = choice(Dex.species.all());
     let attachment: MessageAttachment | null = null;
     try {
@@ -33,14 +35,13 @@ class RandPoke extends Command {
         Type: ${pokemon.types.join('/')}
         Talents: ${Object.values(pokemon.abilities).join('/')}
         Poids: ${pokemon.weightkg} kg
-        Stats: ${stats.atk}/${stats.def}/${stats.hp}/${stats.spa}/${stats.spd}/${stats.spe}
+        Stats: ${stats.hp}/${stats.atk}/${stats.def}/${stats.spa}/${stats.spd}/${stats.spe}
       `,
-      files: []
     };
     if (attachment) {
       messageOptions.files = [attachment];
     }
-    message.reply(messageOptions);
+    await message.reply(messageOptions);
   }
 
   name(): string {
