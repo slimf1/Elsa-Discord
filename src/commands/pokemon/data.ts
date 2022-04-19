@@ -5,7 +5,7 @@ import { Dex, ID } from '@pkmn/dex';
 class Data extends Command {
   async execute({ message, args }: Context): Promise<void> {
     const pokemon = Dex.species.getByID(args as ID);
-    if (!pokemon) {
+    if (!pokemon.name) {
       await message.channel.send('Pokemon not found');
       return;
     }
