@@ -19,6 +19,8 @@ class Data extends Command {
       ${pokemon.baseStats.spa} SpA
       ${pokemon.baseStats.spd} SpD
       ${pokemon.baseStats.spe} Spe
+      Base Forme: ${pokemon.baseForme}
+      Base Species: ${pokemon.baseSpecies} (evolves at ${pokemon.evoLevel})
     `;
     await message.channel.send(reply);
   }
