@@ -1,7 +1,9 @@
 import decache from 'decache';
 import fs from 'fs';
 import path from 'path';
+import { Bot, CommandCollection } from './bot';
 import Command from './command';
+import Listener from './listener';
 
 // https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
 const deepReadDir = async (dirPath: string): Promise<unknown[]> =>
@@ -19,10 +21,12 @@ export interface Type<T> extends Function {
 
 export interface Module {
   commands?: Type<Command>[];
+  listeners?: Type<Listener>[];
 }
 
-export default async function loadCommands(): Promise<Map<string, Command>> {
+export async function loadPlugins(): Promise<[CommandCollection, Listener[]]> {
   const commands: Map<string, Command> = new Map();
+  const listeners: Listener[] = [];
   const files = (await deepReadDir('./dist/src/commands')).flat() as string[];
   const commandFiles = files
     .filter((file: string) => file.endsWith('.js'));
@@ -32,13 +36,16 @@ export default async function loadCommands(): Promise<Map<string, Command>> {
     decache(commandFile);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const commandModule = require(commandFile).default as Module;
-    for (const commandType of commandModule.commands || []) {
+    for (const commandType of commandModule?.commands || []) {
       const command = new commandType;
       commands.set(command.name(), command);
       for (const alias of command.aliases()) {
         commands.set(alias, command);
       }
     }
+    for (const listenerType of commandModule?.listeners || []) {
+      listeners.push(new listenerType);
+    }
   }
-  return commands;
+  return [commands, listeners];
 }

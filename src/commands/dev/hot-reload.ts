@@ -1,5 +1,5 @@
 import Command from '../../command';
-import loadCommands from '../../command-loader';
+import { loadPlugins } from '../../command-loader';
 import { exec } from 'child_process';
 import Context from '../../context';
 
@@ -7,7 +7,10 @@ class HotReload extends Command {
   async execute({ bot, message }: Context): Promise<void> {
     try {
       exec('npm run build', async () => {
-        bot.commands = await loadCommands();
+        const [commands, listeners] = await loadPlugins();
+        bot.commands = commands;
+        bot.removeAllListeners();
+        bot.addListeners(listeners);
         await message.channel.send('Reloaded commands.');
       });
     } catch (e) {
