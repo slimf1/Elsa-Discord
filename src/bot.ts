@@ -2,13 +2,16 @@ import { Client, Message } from 'discord.js';
 import Command from './command';
 import Context from './context';
 import './database';
+import { IBotRepository } from './database';
 import Listener from './listener';
 
 export type CommandCollection = Map<string, Command>;
 
 export interface IBot {
+  trigger: string;
   client: Client;
   commands: CommandCollection;
+  repository: IBotRepository;
   addListeners(listener: Listener[]): void;
   removeAllListeners(): void;
 }
@@ -16,13 +19,19 @@ export interface IBot {
 export class Bot implements IBot {
 
   readonly client: Client;
-  private readonly trigger: string;
+  readonly trigger: string;
+  readonly repository: IBotRepository;
   commands: CommandCollection;
 
-  constructor(client: Client, commands: CommandCollection, trigger: string) {
+  constructor(client: Client,
+    commands: CommandCollection,
+    trigger: string,
+    repository: IBotRepository) {
+
     this.client = client;
     this.commands = commands;
     this.trigger = trigger;
+    this.repository = repository;
   }
 
   addListener(event: string, listener: Listener) {
@@ -31,6 +40,7 @@ export class Bot implements IBot {
 
   addListeners(listeners: Listener[]) {
     for (const listener of listeners) {
+      listener.bot = this;
       this.addListener(listener.event, listener);
     }
   }
@@ -53,7 +63,8 @@ export class Bot implements IBot {
         .content
         .substring(this.trigger.length + command.length + 1);
 
-      if (args.length > 1000 && message.member?.id !== process.env.MAINTAINER) {
+      if (message.author.id === this.client.user?.id
+        || (args.length > 1000 && message.member?.id !== process.env.MAINTAINER)) {
         return;
       }
 
