@@ -14,7 +14,7 @@ export class BotRepository implements IBotRepository {
 
   private readonly dataSource: DataSource;
 
-  private repository: Repository<CustomCommand> | null = null;
+  private customCommandRepository: Repository<CustomCommand> | null = null;
 
   constructor() {
     this.dataSource = new DataSource({
@@ -27,34 +27,34 @@ export class BotRepository implements IBotRepository {
   }
 
   private assertInitialized(): void {
-    if (this.repository === null) {
+    if (this.customCommandRepository === null) {
       throw new Error('Repository not initialized.');
     }
   }
 
   async initialize(): Promise<void> {
     const db = await this.dataSource.initialize();
-    this.repository = db.getRepository(CustomCommand);
+    this.customCommandRepository = db.getRepository(CustomCommand);
   }
 
   async getCustomCommand(guild: string, name: string): Promise<CustomCommand | null> {
     this.assertInitialized();
-    return this.repository!.findOne({ where: { guild, name } });
+    return this.customCommandRepository!.findOne({ where: { guild, name } });
   }
 
   async getCustomCommands(guild: string): Promise<CustomCommand[]> {
     this.assertInitialized();
-    return this.repository!.find({ where: { guild } });
+    return this.customCommandRepository!.find({ where: { guild } });
   }
 
   async createCustomCommand(guild: string, name: string, content: string): Promise<CustomCommand> {
     this.assertInitialized();
-    return this.repository!.save(new CustomCommand(name, guild, content));
+    return this.customCommandRepository!.save(new CustomCommand(name, guild, content));
   }
 
   async deleteCustomCommand(guild: string, name: string): Promise<boolean> {
     this.assertInitialized();
-    const deleteResult = await this.repository!.delete({ guild, name });
+    const deleteResult = await this.customCommandRepository!.delete({ guild, name });
     return deleteResult.affected === 1;
   }
 }

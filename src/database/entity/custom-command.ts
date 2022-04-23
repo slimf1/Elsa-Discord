@@ -10,10 +10,7 @@ export class CustomCommand {
   }
 
   @PrimaryColumn({ type: 'text' }) name!: string;
-
   @PrimaryColumn({ type: 'text' }) guild!: string;
-
   @Column({ type: 'text' }) content!: string;
-
   @Column({ type: 'date' }) createdAt!: Date;
 }
