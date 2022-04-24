@@ -9,7 +9,6 @@ dotenv.config();
 async function run() {
   const [commands, listeners] = await loadPlugins();
   const repository = new BotRepository();
-  await repository.initialize();
   const client = new Client({
     intents: [
       Intents.FLAGS.GUILDS,
