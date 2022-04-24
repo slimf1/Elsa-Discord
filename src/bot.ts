@@ -66,8 +66,10 @@ export class Bot implements IBot {
       .content
       .substring(this.trigger.length + command.length + 1);
 
+    const authorizedChannels = process.env.AUTHORIZED_CHANNELS?.split(';') ?? [];
     if (message.author.id === this.client.user?.id
-      || (args.length > 1500 && message.member?.id !== process.env.MAINTAINER)) {
+      || (args.length > 1500 && message.member?.id !== process.env.MAINTAINER)
+      || !authorizedChannels.includes(message.channelId)) {
       return;
     }
 
