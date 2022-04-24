@@ -5,7 +5,7 @@ import Context from '../../context';
 const channelsNeedingConfirmation: Set<string> = new Set();
 
 class CleanChannel extends Command {
-  private static readonly MESSAGES_PER_DELETE = 100;
+  private static readonly MESSAGES_PER_DELETE = 150;
   private static readonly CONFIRMATION_TIMEOUT = 15000;
 
   async execute({ bot, message, args }: Context): Promise<void> {
