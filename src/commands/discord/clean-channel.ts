@@ -5,6 +5,7 @@ import Context from '../../context';
 const channelsNeedingConfirmation: Set<string> = new Set();
 
 class CleanChannel extends Command {
+  private static readonly MESSAGES_PER_DELETE = 100;
   private static readonly CONFIRMATION_TIMEOUT = 15000;
 
   async execute({ bot, message, args }: Context): Promise<void> {
@@ -23,7 +24,7 @@ class CleanChannel extends Command {
       return;
     }
     channelsNeedingConfirmation.delete(channel.id);
-    const messages = await channel.messages.fetch({ limit: 100 });
+    const messages = await channel.messages.fetch({ limit: CleanChannel.MESSAGES_PER_DELETE });
     await channel.bulkDelete(messages);
     await message.reply(`Deleted ${messages.size} messages.`);
   }
@@ -37,7 +38,7 @@ class CleanChannel extends Command {
   }
 
   override description(): string {
-    return 'Deletes all messages in a channel.';
+    return `Deletes at most ${CleanChannel.MESSAGES_PER_DELETE} messages in a channel.`;
   }
 }
 
