@@ -54,25 +54,27 @@ export class Bot implements IBot {
   }
 
   async onMessageCreate(message: Message) {
-    if (message.content.startsWith(this.trigger)) {
-      const command = message
-        .content
-        .substring(this.trigger.length)
-        .split(' ')[0];
-      const args = message
-        .content
-        .substring(this.trigger.length + command.length + 1);
+    if (!message.content.startsWith(this.trigger)) {
+      return;
+    }
 
-      if (message.author.id === this.client.user?.id
-        || (args.length > 1000 && message.member?.id !== process.env.MAINTAINER)) {
-        return;
-      }
+    const command = message
+      .content
+      .substring(this.trigger.length)
+      .split(' ')[0];
+    const args = message
+      .content
+      .substring(this.trigger.length + command.length + 1);
 
-      if (this.commands.has(command)) {
-        const commandInstance = this.commands.get(command);
-        if (commandInstance?.canExecute(message.member)) {
-          await commandInstance.execute(new Context(this, message, args));
-        }
+    if (message.author.id === this.client.user?.id
+      || (args.length > 1500 && message.member?.id !== process.env.MAINTAINER)) {
+      return;
+    }
+
+    if (this.commands.has(command)) {
+      const commandInstance = this.commands.get(command);
+      if (commandInstance?.canExecute(message.member)) {
+        await commandInstance.execute(new Context(this, message, args));
       }
     }
   }

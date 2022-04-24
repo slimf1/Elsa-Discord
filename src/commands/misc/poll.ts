@@ -10,7 +10,7 @@ import { getKeyByValue } from '../../utils';
 const polls: Map<string, Poll> = new Map();
 
 type EmoteMap = {
-  [key: string]: string;
+  [key: number]: string;
 }
 
 export class Poll {

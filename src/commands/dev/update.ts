@@ -1,22 +1,26 @@
-import { exec } from 'child_process';
 import Command from '../../command';
 import Context from '../../context';
+import { bash } from '../../utils';
 
 class Update extends Command {
   async execute({ message }: Context): Promise<void> {
-    exec('git pull origin master', async (err, stdout, stderr) => {
-      if (err) {
-        await message.reply(`Error: ${err}`);
-        return;
-      }
+    try {
+      const { stdout, stderr } = await bash('git pull origin master');
       await message.channel.send('Pull successful :');
       await message.channel.send(`
-        \`\`\`
-        ${stdout}
-        ${stderr}
-        \`\`\`
-      `);
-    });
+          \`\`\`
+          ${stdout}
+          ${stderr}
+          \`\`\`
+        `);
+    } catch (error) {
+      await message.channel.send('Failed to pull :');
+      await message.channel.send(`
+          \`\`\`
+          ${error}
+          \`\`\`
+        `);
+    }
   }
   name(): string {
     return 'update';

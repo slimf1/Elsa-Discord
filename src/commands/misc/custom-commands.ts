@@ -102,6 +102,9 @@ class CustomCommandListener extends Listener {
       .content
       .substring(this.bot?.trigger?.length ?? 0)
       .split(' ')[0];
+    if (this.bot?.commands.has(command)) {
+      return;
+    }
     const commandArgs = message
       .content
       .substring((this.bot?.trigger?.length ?? 0) + command.length + 1);
