@@ -118,12 +118,6 @@ class CustomCommandListener extends Listener {
     const predefinedFunctions: FunctionMap = {
       'choice': (...args: string[]): string => choice(args),
       'dice': (a: number, b: number): number => Math.floor(Math.random() * (b - a + 1)) + a,
-      'args': (): string => commandArgs,
-      'channel': (): string => message.channel.toString(),
-      'guild': (): string => message.guild!.toString(),
-      'author': (): string => message.author.toString(),
-      'randMember': (): string => choice([...message.guild!.members.cache.values()]
-        .map(t => t?.displayName ?? '')).toString(),
     };
 
     const binaryOperators: FunctionMap = {
@@ -133,6 +127,16 @@ class CustomCommandListener extends Listener {
       '/': (a: number, b: number): number => a / b,
       '%': (a: number, b: number): number => a % b,
       '**': (a: number, b: number): number => a ** b,
+    };
+
+    const predefinedIdentifiers: FunctionMap = {
+      'message': (): string => message.content,
+      'author': (): string => message.author.toString(),
+      'channel': (): string => message.channel.toString(),
+      'guild': (): string => message.guild!.toString(),
+      'args': (): string => commandArgs,
+      'randMember': (): string => choice([...message.guild!.members.cache.values()]
+        .map(t => t?.displayName ?? '')).toString(),
     };
 
     const evaluate = (node: Expression): unknown => {
@@ -156,6 +160,13 @@ class CustomCommandListener extends Listener {
           return binaryOperators[operator](left, right);
         }
         throw new Error(`Could not evaluate binary expression ${node.operator}`);
+      }
+      if (node.type === 'Identifier') {
+        const identifier = node.name as string;
+        if (predefinedIdentifiers[identifier]) {
+          return predefinedIdentifiers[identifier]();
+        }
+        throw new Error(`Could not find identifier ${identifier}`);
       }
     };
 
