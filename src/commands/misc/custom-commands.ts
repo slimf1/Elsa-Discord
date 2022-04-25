@@ -1,7 +1,9 @@
 import { Message } from 'discord.js';
+import jsep, { Expression } from 'jsep';
 import Command from '../../command';
 import Context from '../../context';
 import Listener from '../../listener';
+import { choice } from '../../utils/rand';
 
 class AddCustomCommand extends Command {
   async execute({ bot, message, args }: Context): Promise<void> {
@@ -61,6 +63,10 @@ class DeleteCustomCommand extends Command {
   }
 }
 
+type FunctionMap = {
+  [key: string]: CallableFunction;
+};
+
 class ListCustomCommand extends Command {
   async execute({ bot, message }: Context): Promise<void> {
     if (message.guild === null) {
@@ -108,11 +114,74 @@ class CustomCommandListener extends Listener {
     const commandArgs = message
       .content
       .substring((this.bot?.trigger?.length ?? 0) + command.length + 1);
+
+    const predefinedFunctions: FunctionMap = {
+      'choice': (...args: string[]): string => choice(args),
+      'dice': (a: number, b: number): number => Math.floor(Math.random() * (b - a + 1)) + a,
+      'args': (): string => commandArgs,
+      'channel': (): string => message.channel.toString(),
+      'guild': (): string => message.guild!.toString(),
+      'author': (): string => message.author.toString(),
+      'randMember': (): string => choice([...message.guild!.members.cache.values()]
+        .map(t => t?.displayName ?? '')).toString(),
+    };
+
+    const binaryOperators: FunctionMap = {
+      '+': (a: number, b: number): number => a + b,
+      '-': (a: number, b: number): number => a - b,
+      '*': (a: number, b: number): number => a * b,
+      '/': (a: number, b: number): number => a / b,
+      '%': (a: number, b: number): number => a % b,
+      '**': (a: number, b: number): number => a ** b,
+    };
+
+    const evaluate = (node: Expression): unknown => {
+      if (node.type === 'Literal') {
+        return node.value;
+      }
+      if (node.type === 'CallExpression') {
+        const functionNode = node.callee as Expression;
+        const func = functionNode.name as string;
+        const functionArgs = (node!.arguments as Expression[]).map(evaluate);
+        if (predefinedFunctions[func]) {
+          return predefinedFunctions[func](...functionArgs);
+        }
+        throw new Error(`Could not find function ${func}`);
+      }
+      if (node.type === 'BinaryExpression') {
+        const left = evaluate(node.left as Expression);
+        const right = evaluate(node.right as Expression);
+        const operator = node.operator as string;
+        if (binaryOperators[operator]) {
+          return binaryOperators[operator](left, right);
+        }
+        throw new Error(`Could not evaluate binary expression ${node.operator}`);
+      }
+    };
+
     const customCommand = await this.bot?.repository.getCustomCommand(message.guild.id, command);
     if (!customCommand) {
       return;
     }
-    await message.channel.send(customCommand.content);
+    try {
+      let content = customCommand.content;
+      const accoladeRegexpr = /({[^}]+})/g;
+      const matches = content.match(accoladeRegexpr);
+      if (matches === null) {
+        await message.channel.send(content);
+        return;
+      }
+      for (const match of matches) {
+        const expression = match.substring(1, match.length - 1);
+        const node = jsep(expression);
+        const result = evaluate(node);
+        content = content.replace(match, (result as object).toString());
+      }
+      await message.channel.send(content);
+    } catch (error) {
+      console.error(`Couldn't parse custom command ${command} with content ${customCommand.content}:
+        ${error}`);
+    }
   }
 }
 
