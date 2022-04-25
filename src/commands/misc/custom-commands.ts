@@ -17,7 +17,7 @@ class AddCustomCommand extends Command {
       await message.channel.send(`Command ${commandName} already exists.`);
       return;
     }
-    if (commandName === undefined || content === undefined) {
+    if (!commandName || !content) {
       await message.channel.send('Invalid command name or content.');
       return;
     }
@@ -145,7 +145,7 @@ class CustomCommandListener extends Listener {
       }
       if (node.type === 'CallExpression') {
         const functionNode = node.callee as Expression;
-        const func = functionNode.name as string;
+        const func = functionNode.name as string; // evaluate (pas forcemment une string)
         const functionArgs = (node!.arguments as Expression[]).map(evaluate);
         if (predefinedFunctions[func]) {
           return predefinedFunctions[func](...functionArgs);
