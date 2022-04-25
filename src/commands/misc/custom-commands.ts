@@ -130,7 +130,7 @@ class CustomCommandListener extends Listener {
     };
 
     const predefinedIdentifiers: FunctionMap = {
-      'message': (): string => message.content,
+      'command': (): string => command,
       'author': (): string => message.author.toString(),
       'channel': (): string => message.channel.toString(),
       'guild': (): string => message.guild!.toString(),
@@ -190,8 +190,8 @@ class CustomCommandListener extends Listener {
       }
       await message.channel.send(content);
     } catch (error) {
-      console.error(`Couldn't parse custom command ${command} with content ${customCommand.content}:
-        ${error}`);
+      await message.channel
+        .send(`Error while evaluating custom command ${command}: \`\`\`${error}\`\`\``);
     }
   }
 }
