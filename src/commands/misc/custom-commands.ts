@@ -121,14 +121,7 @@ class CustomCommandListener extends Listener {
     const predefinedFunctions: FunctionMap = {
       'choice': (...args: string[]): string => choice(args),
       'dice': (a: number, b: number): number => Math.floor(Math.random() * (b - a + 1)) + a,
-      'repeat': (expression: string, count: number): string => {
-        const result = new Array(count).map(() => {
-          const node = jsep(expression);
-          const result = evaluate(node);
-          return result;
-        }).join('');
-        return result;
-      }
+      'repeat': (expr: string, count: number): string => new Array(count).fill(expr).join('')
     };
 
     const binaryOperators: FunctionMap = {
