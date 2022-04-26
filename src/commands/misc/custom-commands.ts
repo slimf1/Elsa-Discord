@@ -145,7 +145,7 @@ class CustomCommandListener extends Listener {
       }
       if (node.type === 'CallExpression') {
         const functionNode = node.callee as Expression;
-        const func = functionNode.name as string; // evaluate (pas forcemment une string)
+        const func = functionNode.name as string;
         const functionArgs = (node!.arguments as Expression[]).map(evaluate);
         if (predefinedFunctions[func]) {
           return predefinedFunctions[func](...functionArgs);
@@ -176,8 +176,7 @@ class CustomCommandListener extends Listener {
     }
     try {
       let content = customCommand.content;
-      const accoladeRegexpr = /({[^}]+})/g;
-      const matches = content.match(accoladeRegexpr);
+      const matches = content.match(/({[^}]+})/g);
       if (matches === null) {
         await message.channel.send(content);
         return;
