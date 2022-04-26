@@ -141,7 +141,7 @@ class CustomCommandListener extends Listener {
       'args': (): string => commandArgs,
       'randMember': (): string => choice([...message.guild!.members.cache.values()]
         .map(t => t?.displayName ?? '')).toString(),
-    };``
+    };
 
     const evaluate = (node: Expression): unknown => {
       if (node.type === 'Literal') {
