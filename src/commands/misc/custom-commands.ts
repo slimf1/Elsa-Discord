@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 import jsep, { Expression } from 'jsep';
+import { DateTime } from 'luxon';
 import Command from '../../command';
 import Context from '../../context';
 import Listener from '../../listener';
@@ -38,7 +39,7 @@ class AddCustomCommand extends Command {
     return 'add-custom-command';
   }
   aliases(): string[] {
-    return ['add-custom'];
+    return ['add-custom', 'add-command'];
   }
 }
 
@@ -59,7 +60,7 @@ class DeleteCustomCommand extends Command {
     return 'delete-custom-command';
   }
   aliases(): string[] {
-    return ['delete-custom'];
+    return ['delete-custom', 'delete-command'];
   }
 }
 
@@ -77,14 +78,16 @@ class ListCustomCommand extends Command {
       await message.channel.send('No custom commands found.');
       return;
     }
-    const responses = commands.map(c => `${c.name}: ${c.content}`);
-    await message.channel.send(`Custom commands: \`\`\`${responses.join('\n')}\`\`\``);
+    const responses = commands.map(c => `${c.name}: ${c.content}. ` +
+      `Créée le ${DateTime.fromFormat(c.createdAt.toString(), 'yyyy-MM-dd')
+        .toFormat('dd/MM/yyyy')}`);
+    await message.channel.send(`Custom commands: \`\`\`${responses.join('\n\n')}\`\`\``);
   }
   name(): string {
     return 'list-custom-commands';
   }
   aliases(): string[] {
-    return ['list-custom'];
+    return ['list-custom', 'list-command'];
   }
 }
 
@@ -145,12 +148,12 @@ class CustomCommandListener extends Listener {
       }
       if (node.type === 'CallExpression') {
         const functionNode = node.callee as Expression;
-        const func = functionNode.name as string;
+        const functionName = functionNode.name as string;
         const functionArgs = (node!.arguments as Expression[]).map(evaluate);
-        if (predefinedFunctions[func]) {
-          return predefinedFunctions[func](...functionArgs);
+        if (predefinedFunctions[functionName]) {
+          return predefinedFunctions[functionName](...functionArgs);
         }
-        throw new Error(`Could not find function ${func}`);
+        throw new Error(`Could not find function ${functionName}`);
       }
       if (node.type === 'BinaryExpression') {
         const left = evaluate(node.left as Expression);
@@ -176,11 +179,7 @@ class CustomCommandListener extends Listener {
     }
     try {
       let content = customCommand.content;
-      const matches = content.match(/({[^}]+})/g);
-      if (matches === null) {
-        await message.channel.send(content);
-        return;
-      }
+      const matches = content.match(/({[^}]+})/g) ?? [];
       for (const match of matches) {
         const expression = match.substring(1, match.length - 1);
         const node = jsep(expression);

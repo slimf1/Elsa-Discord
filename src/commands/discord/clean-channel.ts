@@ -55,7 +55,7 @@ class CleanChannel extends Command {
 
   override description(): string {
     return `Deletes at most ${CleanChannel.MESSAGES_PER_DELETE} messages in a channel.`
-      + ' Syntax: ```clean-channel <channel ID>, <user ID (optional)>```';
+      + ' Syntax: clean-channel <channel ID>, <user ID (optional)>';
   }
 }
 

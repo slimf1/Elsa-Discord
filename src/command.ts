@@ -22,10 +22,10 @@ export default abstract class Command {
     if (this.isMaintainerOnly()) {
       return false;
     }
-    const authorizedRoles = process.env.AUTHORIZED_ROLES?.split(';');
-    return !!authorizedRoles
+    const whitelistUserIds = process.env.WHITELIST?.split(';') ?? [];
+    return !!whitelistUserIds
       && !!member
-      && authorizedRoles.some(role => member.roles.cache.has(role));
+      && whitelistUserIds.includes(member.id);
   }
 
   isMaintainerOnly(): boolean {
