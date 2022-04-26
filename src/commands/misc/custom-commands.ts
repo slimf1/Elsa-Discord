@@ -121,6 +121,10 @@ class CustomCommandListener extends Listener {
     const predefinedFunctions: FunctionMap = {
       'choice': (...args: string[]): string => choice(args),
       'dice': (a: number, b: number): number => Math.floor(Math.random() * (b - a + 1)) + a,
+      'repeat': (expression: string, count: number): string => {
+        const result = new Array(count).fill(expression).join('');
+        return result;
+      }
     };
 
     const binaryOperators: FunctionMap = {
@@ -140,7 +144,7 @@ class CustomCommandListener extends Listener {
       'args': (): string => commandArgs,
       'randMember': (): string => choice([...message.guild!.members.cache.values()]
         .map(t => t?.displayName ?? '')).toString(),
-    };
+    };``
 
     const evaluate = (node: Expression): unknown => {
       if (node.type === 'Literal') {
