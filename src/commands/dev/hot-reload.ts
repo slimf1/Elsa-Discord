@@ -9,8 +9,6 @@ class HotReload extends Command {
       await bash('npm run build');
       const [commands, listeners] = await loadPlugins();
       bot.commands = commands;
-      bot.removeAllListeners();
-      bot.addListeners(listeners);
       await message.channel.send('Reloaded commands.');
     } catch (e) {
       await message.channel.send('Failed to reload commands: ' + e);

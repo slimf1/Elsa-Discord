@@ -33,7 +33,9 @@ export async function loadPlugins(): Promise<[CommandCollection, Listener[]]> {
 
   for (const file of commandFiles) {
     const commandFile = path.join(__dirname, file.substring(9));
-    decache(commandFile);
+    delete require.cache[commandFile];
+    //delete require.cache[require.resolve(commandFile)];
+
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const commandModule = require(commandFile).default as Module;
     for (const commandType of commandModule?.commands || []) {
