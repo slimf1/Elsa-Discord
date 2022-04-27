@@ -38,6 +38,10 @@ class CustomCommandListener extends Listener {
     if (!whitelistUserIds.includes(message.author.id)) {
       return;
     }
+    const authorizedChannels = process.env.AUTHORIZED_CHANNELS?.split(';') ?? [];
+    if (!authorizedChannels.includes(message.channel.id)) {
+      return;
+    }
 
     const predefinedFunctions: FunctionMap = {
       'choice': (...args: string[]): string => choice(args),
