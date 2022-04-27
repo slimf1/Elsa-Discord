@@ -34,6 +34,11 @@ class CustomCommandListener extends Listener {
       .content
       .substring((this.bot?.trigger?.length ?? 0) + command.length + 1);
 
+    const whitelistUserIds = process.env.WHITELIST?.split(';') ?? [];
+    if (!whitelistUserIds.includes(message.author.id)) {
+      return;
+    }
+
     const predefinedFunctions: FunctionMap = {
       'choice': (...args: string[]): string => choice(args),
       'dice': (a: number, b: number): number => Math.floor(Math.random() * (b - a + 1)) + a,
