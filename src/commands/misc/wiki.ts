@@ -10,12 +10,12 @@ class Wiki extends Command {
       await message.reply(this.description());
       return;
     }
-    const searchData = await axios.post('https://fr.wikipedia.org/w/api.php', {
+    const searchData = (await axios.post('https://fr.wikipedia.org/w/api.php', {
       'action': 'query',
       'list': 'search',
       'srsearch': args,
       'format': 'json'
-    });
+    })).data;
     const pages = searchData['query']['search'];
     if (!pages) {
       await message.reply('Aucun résultat');
@@ -25,14 +25,14 @@ class Wiki extends Command {
     if (title.toLowerCase().includes('homohnymie')) {
       title = pages[1]['title'];
     }
-    const pageData = await axios.post('https://fr.wikipedia.org/w/api.php', {
+    const pageData = (await axios.post('https://fr.wikipedia.org/w/api.php', {
       'action': 'query',
       'prop': 'extracts',
       'format': 'json',
       'exintro':  true,
       'explaintext': true,
       'titles': title
-    });
+    })).data;
     const page = pageData['query']['pages'][Object.keys(pageData['query']['pages'])[0]];
     await message.reply(page['extract']);
   }
