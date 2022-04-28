@@ -1,7 +1,8 @@
 import { Message } from 'discord.js';
 import jsep, { Expression } from 'jsep';
+import { DateTime } from 'luxon';
 import Listener from '../../listener';
-import { choice } from '../../utils/rand';
+import { choice, shuffle } from '../../utils/rand';
 
 type FunctionMap = {
   [key: string]: CallableFunction;
@@ -46,7 +47,38 @@ class CustomCommandListener extends Listener {
     const predefinedFunctions: FunctionMap = {
       'choice': (...args: string[]): string => choice(args),
       'dice': (a: number, b: number): number => Math.floor(Math.random() * (b - a + 1)) + a,
-      'repeat': (expr: string, count: number): string => new Array(count).fill(expr).join('')
+      'repeat': (expr: string, count: number): string => new Array(count).fill(expr).join(''),
+      'optional': (expr: string, probability: number): string =>
+        Math.random() < probability ? expr : '',
+      'randomDate': (start: string, end: string): string => {
+        const startDate = DateTime.fromFormat(start, 'dd/MM/yyyy');
+        const endDate = DateTime.fromFormat(end, 'dd/MM/yyyy');
+        return DateTime.local()
+          .set({
+            year: startDate.year,
+            month: startDate.month,
+            day: startDate.day,
+          })
+          .plus({
+            days: Math.floor(Math.random() * (endDate.diff(startDate).as('days') + 1)),
+          })
+          .toFormat('dd/MM/yyyy');
+      },
+      'listOf': (...args: string[]): string[] => args,
+      'sampleFrom': (args: string[], count: number, separator: string): string => {
+        const shuffledArgs = shuffle(args);
+        return new Array(count).fill('').map(() => shuffledArgs.pop()).join(separator);
+      },
+      'shuffle': (...args: string[]): string[] => shuffle(args),
+      'join': (args: string[], separator: string): string => args.join(separator),
+      'cos': (value: number): number => Math.cos(value),
+      'sin': (value: number): number => Math.sin(value),
+      'tan': (value: number): number => Math.tan(value),
+      'acos': (value: number): number => Math.acos(value),
+      'asin': (value: number): number => Math.asin(value),
+      'atan': (value: number): number => Math.atan(value),
+      'atan2': (y: number, x: number): number => Math.atan2(y, x),
+      'round': (value: number, fractionDigits: number): string => value.toFixed(fractionDigits),
     };
 
     const binaryOperators: FunctionMap = {
@@ -66,6 +98,8 @@ class CustomCommandListener extends Listener {
       'args': (): string => commandArgs,
       'randMember': (): string => choice([...message.guild!.members.cache.values()]
         .map(t => t?.displayName ?? '')).toString(),
+      'pi': (): number => Math.PI,
+      'e': (): number => Math.E,
     };
 
     const evaluate = (node: Expression): unknown => {
