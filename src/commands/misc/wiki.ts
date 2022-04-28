@@ -10,31 +10,41 @@ class Wiki extends Command {
       await message.reply(this.description());
       return;
     }
-    const searchData = (await axios.post('https://fr.wikipedia.org/w/api.php', {
-      'action': 'query',
-      'list': 'search',
-      'srsearch': args,
-      'format': 'json'
-    })).data;
+    const searchData = (await axios.get(
+      'https://fr.wikipedia.org/w/api.php',
+      {
+        params: {
+          'action': 'query',
+          'list': 'search',
+          'srsearch': args,
+          'format': 'json'
+        }
+      }
+    )).data;
     const pages = searchData['query']['search'];
-    if (!pages) {
+    if (!pages || !pages[0]) {
       await message.reply('Aucun résultat');
       return;
     }
     let title: string = pages[0]['title'];
-    if (title.toLowerCase().includes('homohnymie')) {
+    if (title.toLowerCase().includes('homonymie')) {
       title = pages[1]['title'];
     }
-    const pageData = (await axios.post('https://fr.wikipedia.org/w/api.php', {
-      'action': 'query',
-      'prop': 'extracts',
-      'format': 'json',
-      'exintro':  true,
-      'explaintext': true,
-      'titles': title
-    })).data;
+    const pageData = (await axios.get('https://fr.wikipedia.org/w/api.php',
+      {
+        params: {
+          'action': 'query',
+          'prop': 'extracts',
+          'format': 'json',
+          'exintro':  true,
+          'explaintext': true,
+          'titles': title
+        }
+      }
+    )).data;
     const page = pageData['query']['pages'][Object.keys(pageData['query']['pages'])[0]];
-    await message.reply(page['extract']);
+    const content = page['extract'].split('\n')[0].substring(0, 2000);
+    await message.reply(content.length > 0 ? content : 'Aucun résultat');
   }
 
   override name(): string {
