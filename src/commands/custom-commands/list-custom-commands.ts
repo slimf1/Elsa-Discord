@@ -1,3 +1,4 @@
+import { MessageOptions, Util } from 'discord.js';
 import { DateTime } from 'luxon';
 import Command from '../../command';
 import Context from '../../context';
@@ -15,7 +16,12 @@ class ListCustomCommand extends Command {
     const responses = commands.map(c => `${c.name}: ${c.content}. ` +
       `Créée le ${DateTime.fromFormat(c.createdAt.toString(), 'yyyy-MM-dd')
         .toFormat('dd/MM/yyyy')}`);
-    await message.channel.send(`Custom commands: \`\`\`${responses.join('\n\n')}\`\`\``);
+    for (const part of Util.splitMessage(
+      `\`\`\`${responses.join('\n\n')}\`\`\``,
+      { maxLength: 2000, append: '```', prepend: '```' }
+    )) {
+      await message.channel.send(part);
+    }
   }
   name(): string {
     return 'list-custom-commands';
