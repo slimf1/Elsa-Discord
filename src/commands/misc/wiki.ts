@@ -11,7 +11,6 @@ class Wiki extends Command {
       return;
     }
     const lang = command.includes('-') ? command.split('-')[1] : 'fr';
-    console.log({ command, lang });
     const searchData = (await axios.get(
       `https://${lang}.wikipedia.org/w/api.php`,
       {
@@ -54,7 +53,8 @@ class Wiki extends Command {
   }
 
   override aliases(): string[] {
-    return ['wiki-en'];
+    return ['wiki-en', 'wiki-nl', 'wiki-it', 'wiki-de', 'wiki-es',
+      'wiki-ja', 'wiki-ru', 'wiki-zh'];
   }
 
   override description(): string {
