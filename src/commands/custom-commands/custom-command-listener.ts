@@ -95,7 +95,18 @@ class CustomCommandListener extends Listener {
       'author': (): string => message.author.toString(),
       'channel': (): string => message.channel.toString(),
       'guild': (): string => message.guild!.toString(),
-      'args': (): string => commandArgs,
+      'args': (): string => {
+        // TODO: refacto (dupli)
+        let content = commandArgs;
+        const matches = content.match(/({[^}]+})/g) ?? [];
+        for (const match of matches) {
+          const expression = match.substring(1, match.length - 1);
+          const node = jsep(expression);
+          const result = evaluate(node);
+          content = content.replace(match, (result as object).toString());
+        }
+        return content;
+      },
       'randMember': (): string => choice([...message.guild!.members.cache.values()]
         .map(t => t?.displayName ?? '')).toString(),
       'pi': (): number => Math.PI,
