@@ -5,13 +5,15 @@ import Command from '../../command';
 import Context from '../../context';
 
 class Wiki extends Command {
-  async execute({ message, args }: Context): Promise<void> {
+  async execute({ message, args, command }: Context): Promise<void> {
     if (!args) {
       await message.reply(this.description());
       return;
     }
+    const lang = command.includes('-') ? command.split('-')[1] : 'fr';
+    console.log({ command, lang });
     const searchData = (await axios.get(
-      'https://fr.wikipedia.org/w/api.php',
+      `https://${lang}.wikipedia.org/w/api.php`,
       {
         params: {
           'action': 'query',
@@ -30,7 +32,7 @@ class Wiki extends Command {
     if (title.toLowerCase().includes('homonymie')) {
       title = pages[1]['title'];
     }
-    const pageData = (await axios.get('https://fr.wikipedia.org/w/api.php',
+    const pageData = (await axios.get(`https://${lang}.wikipedia.org/w/api.php`,
       {
         params: {
           'action': 'query',
@@ -49,6 +51,10 @@ class Wiki extends Command {
 
   override name(): string {
     return 'wiki';
+  }
+
+  override aliases(): string[] {
+    return ['wiki-en'];
   }
 
   override description(): string {
