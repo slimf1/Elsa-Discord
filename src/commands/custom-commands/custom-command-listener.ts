@@ -8,6 +8,17 @@ type FunctionMap = {
     [key: string]: CallableFunction;
 };
 
+function parseContent(content: string, evaluate: (node: Expression) => unknown) {
+    const matches = content.match(/({[^}]+})/g) ?? [];
+    for (const match of matches) {
+        const expression = match.substring(1, match.length - 1);
+        const node = jsep(expression);
+        const result = evaluate(node);
+        content = content.replace(match, (result as object).toString());
+    }
+    return content;
+}
+
 class CustomCommandListener extends Listener {
     constructor() {
         super('messageCreate');
@@ -95,18 +106,7 @@ class CustomCommandListener extends Listener {
             'author': (): string => message.author.toString(),
             'channel': (): string => message.channel.toString(),
             'guild': (): string => message.guild!.toString(),
-            'args': (): string => {
-                // TODO: refacto (dupli)
-                let content = commandArgs;
-                const matches = content.match(/({[^}]+})/g) ?? [];
-                for (const match of matches) {
-                    const expression = match.substring(1, match.length - 1);
-                    const node = jsep(expression);
-                    const result = evaluate(node);
-                    content = content.replace(match, (result as object).toString());
-                }
-                return content;
-            },
+            'args': (): string => parseContent(commandArgs, evaluate),
             'randMember': (): string => choice([...message.guild!.members.cache.values()]
                 .map(t => t?.displayName ?? '')).toString(),
             'pi': (): number => Math.PI,
@@ -150,13 +150,7 @@ class CustomCommandListener extends Listener {
         }
         try {
             let content = customCommand.content;
-            const matches = content.match(/({[^}]+})/g) ?? [];
-            for (const match of matches) {
-                const expression = match.substring(1, match.length - 1);
-                const node = jsep(expression);
-                const result = evaluate(node);
-                content = content.replace(match, (result as object).toString());
-            }
+            content = parseContent(content, evaluate);
             await message.channel.send(content);
         } catch (error) {
             await message.channel

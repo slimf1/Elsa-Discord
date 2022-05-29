@@ -1,4 +1,4 @@
-import {MessageOptions, Util} from 'discord.js';
+import {Util} from 'discord.js';
 import {DateTime} from 'luxon';
 import Command from '../../command';
 import Context from '../../context';

@@ -41,7 +41,8 @@ export async function getValorantUserData(usernameWithTag: string): Promise<User
     return userData as UserDataResponse;
 }
 
-export async function getValorantMMRData(username: string, tag: string,
+export async function getValorantMMRData(username: string,
+                                         tag: string,
                                          region: string): Promise<MMRDataResponse> {
 
     const mmrData = (await axios.get(`${API_BASE_URL.href}mmr/${region}/${username}/${tag}`)).data;

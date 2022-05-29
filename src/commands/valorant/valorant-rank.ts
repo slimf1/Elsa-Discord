@@ -5,6 +5,9 @@ import {loadCanvasFromUri} from '../../utils/images';
 import {getValorantMMRData, getValorantUserData, UserDataResponse} from './calls';
 
 class ValorantRank extends Command {
+
+    private static readonly AVATAR_DIMENSION = 128;
+
     async execute({message, args}: Context): Promise<void> {
         let userDataResponse: UserDataResponse | undefined = undefined;
         try {
@@ -25,10 +28,11 @@ class ValorantRank extends Command {
         const mmrDataResponse = await getValorantMMRData(userData.name, userData.tag, userData.region);
         if (mmrDataResponse.status === 200) {
             const mmrData = mmrDataResponse.data!;
-            response += `*Tier*: ${mmrData.currenttierpatched}, ${mmrData.ranking_in_tier} pts\n`;
+            response += `*Tier*: ${mmrData.currenttierpatched}, ${mmrData.ranking_in_tier} RR\n`;
         }
 
-        const canvas = await loadCanvasFromUri(128, 128, userData.card.small);
+        const canvas = await loadCanvasFromUri(ValorantRank.AVATAR_DIMENSION,
+            ValorantRank.AVATAR_DIMENSION, userData.card.small);
         await message.channel.send({files: [new MessageAttachment(canvas.toBuffer(), 'avatar.png')]});
         await message.channel.send(response);
     }
