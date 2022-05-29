@@ -1,83 +1,85 @@
-import { Client, Message } from 'discord.js';
+import {Client, Message} from 'discord.js';
 import Command from './command';
 import Context from './context';
 import './database';
-import { IBotRepository } from './database';
+import {IBotRepository} from './database';
 import Listener from './listener';
 
 export type CommandCollection = Map<string, Command>;
 
 export interface IBot {
-  trigger: string;
-  client: Client;
-  commands: CommandCollection;
-  repository: IBotRepository;
-  addListeners(listener: Listener[]): void;
-  removeAllListeners(): void;
+    trigger: string;
+    client: Client;
+    commands: CommandCollection;
+    repository: IBotRepository;
+
+    addListeners(listener: Listener[]): void;
+
+    removeAllListeners(): void;
 }
 
 export class Bot implements IBot {
 
-  readonly client: Client;
-  readonly trigger: string;
-  readonly repository: IBotRepository;
-  commands: CommandCollection;
+    readonly client: Client;
+    readonly trigger: string;
+    readonly repository: IBotRepository;
+    commands: CommandCollection;
 
-  constructor(client: Client,
-    commands: CommandCollection,
-    trigger: string,
-    repository: IBotRepository) {
+    constructor(client: Client,
+                commands: CommandCollection,
+                trigger: string,
+                repository: IBotRepository) {
 
-    this.client = client;
-    this.commands = commands;
-    this.trigger = trigger;
-    this.repository = repository;
-  }
-
-  addListener(event: string, listener: Listener) {
-    this.client.on(event, listener.onEvent.bind(listener));
-  }
-
-  addListeners(listeners: Listener[]) {
-    for (const listener of listeners) {
-      listener.bot = this;
-      this.addListener(listener.event, listener);
-    }
-  }
-
-  removeAllListeners() {
-    this.client.removeAllListeners();
-  }
-
-  onReady() {
-    console.log(`Logged in as ${this.client.user?.tag}!`);
-  }
-
-  async onMessageCreate(message: Message) {
-    if (!message.content.startsWith(this.trigger)) {
-      return;
+        this.client = client;
+        this.commands = commands;
+        this.trigger = trigger;
+        this.repository = repository;
     }
 
-    const command = message
-      .content
-      .substring(this.trigger.length)
-      .split(' ')[0];
-    const args = message
-      .content
-      .substring(this.trigger.length + command.length + 1);
-
-    const authorizedChannels = process.env.AUTHORIZED_CHANNELS?.split(';') ?? [];
-    if (message.author.id === this.client.user?.id
-      || (args.length > 1500 && message.member?.id !== process.env.MAINTAINER)
-      || (!authorizedChannels.includes(message.channelId))) {
-      return;
+    addListener(event: string, listener: Listener) {
+        this.client.on(event, listener.onEvent.bind(listener));
     }
 
-    if (this.commands.has(command)) {
-      const commandInstance = this.commands.get(command);
-      if (commandInstance?.canExecute(message.member)) {
-        await commandInstance.execute(new Context(this, message, args, command));
-      }
+    addListeners(listeners: Listener[]) {
+        for (const listener of listeners) {
+            listener.bot = this;
+            this.addListener(listener.event, listener);
+        }
     }
-  }
+
+    removeAllListeners() {
+        this.client.removeAllListeners();
+    }
+
+    onReady() {
+        console.log(`Logged in as ${this.client.user?.tag}!`);
+    }
+
+    async onMessageCreate(message: Message) {
+        if (!message.content.startsWith(this.trigger)) {
+            return;
+        }
+
+        const command = message
+            .content
+            .substring(this.trigger.length)
+            .split(' ')[0];
+        const args = message
+            .content
+            .substring(this.trigger.length + command.length + 1);
+
+        const authorizedChannels = process.env.AUTHORIZED_CHANNELS?.split(';') ?? [];
+        if (message.author.id === this.client.user?.id
+            || (args.length > 1500 && message.member?.id !== process.env.MAINTAINER)
+            || (!authorizedChannels.includes(message.channelId))) {
+            return;
+        }
+
+        if (this.commands.has(command)) {
+            const commandInstance = this.commands.get(command);
+            if (commandInstance?.canExecute(message.member)) {
+                await commandInstance.execute(new Context(this, message, args, command));
+            }
+        }
+    }
 }

@@ -33,13 +33,9 @@
         "max-len": [
             "error",
             {
-                "code": 100,
+                "code": 120,
                 "ignoreComments": true
             }
-        ],
-        "indent": [
-            "error",
-            2
         ],
         "linebreak-style": [
             "error",

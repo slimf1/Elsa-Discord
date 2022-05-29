@@ -5,63 +5,63 @@ import Command from '../../command';
 import Context from '../../context';
 
 class Wiki extends Command {
-  async execute({ message, args, command }: Context): Promise<void> {
-    if (!args) {
-      await message.reply(this.description());
-      return;
-    }
-    const lang = command.includes('-') ? command.split('-')[1] : 'fr';
-    const searchData = (await axios.get(
-      `https://${lang}.wikipedia.org/w/api.php`,
-      {
-        params: {
-          'action': 'query',
-          'list': 'search',
-          'srsearch': args,
-          'format': 'json'
+    async execute({message, args, command}: Context): Promise<void> {
+        if (!args) {
+            await message.reply(this.description());
+            return;
         }
-      }
-    )).data;
-    const pages = searchData['query']['search'];
-    if (!pages || !pages[0]) {
-      await message.reply('Aucun résultat');
-      return;
-    }
-    let title: string = pages[0]['title'];
-    if (title.toLowerCase().includes('homonymie')) {
-      title = pages[1]['title'];
-    }
-    const pageData = (await axios.get(`https://${lang}.wikipedia.org/w/api.php`,
-      {
-        params: {
-          'action': 'query',
-          'prop': 'extracts',
-          'format': 'json',
-          'exintro':  true,
-          'explaintext': true,
-          'titles': title
+        const lang = command.includes('-') ? command.split('-')[1] : 'fr';
+        const searchData = (await axios.get(
+            `https://${lang}.wikipedia.org/w/api.php`,
+            {
+                params: {
+                    'action': 'query',
+                    'list': 'search',
+                    'srsearch': args,
+                    'format': 'json'
+                }
+            }
+        )).data;
+        const pages = searchData['query']['search'];
+        if (!pages || !pages[0]) {
+            await message.reply('Aucun résultat');
+            return;
         }
-      }
-    )).data;
-    const page = pageData['query']['pages'][Object.keys(pageData['query']['pages'])[0]];
-    const content = page['extract'].split('\n')[0].substring(0, 2000);
-    await message.reply(content.length > 0 ? content : 'Aucun résultat');
-  }
+        let title: string = pages[0]['title'];
+        if (title.toLowerCase().includes('homonymie')) {
+            title = pages[1]['title'];
+        }
+        const pageData = (await axios.get(`https://${lang}.wikipedia.org/w/api.php`,
+            {
+                params: {
+                    'action': 'query',
+                    'prop': 'extracts',
+                    'format': 'json',
+                    'exintro': true,
+                    'explaintext': true,
+                    'titles': title
+                }
+            }
+        )).data;
+        const page = pageData['query']['pages'][Object.keys(pageData['query']['pages'])[0]];
+        const content = page['extract'].split('\n')[0].substring(0, 2000);
+        await message.reply(content.length > 0 ? content : 'Aucun résultat');
+    }
 
-  override name(): string {
-    return 'wiki';
-  }
+    override name(): string {
+        return 'wiki';
+    }
 
-  override aliases(): string[] {
-    return ['wiki-en', 'wiki-nl', 'wiki-it', 'wiki-de', 'wiki-es',
-      'wiki-ja', 'wiki-ru', 'wiki-zh'];
-  }
+    override aliases(): string[] {
+        return ['wiki-en', 'wiki-nl', 'wiki-it', 'wiki-de', 'wiki-es',
+            'wiki-ja', 'wiki-ru', 'wiki-zh'];
+    }
 
-  override description(): string {
-    return 'Syntax: -wiki <keywords>';
-  }
+    override description(): string {
+        return 'Syntax: -wiki <keywords>';
+    }
 }
 
 export default {
-  commands: [Wiki],
+    commands: [Wiki],
 };
