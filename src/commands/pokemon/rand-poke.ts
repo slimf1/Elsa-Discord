@@ -4,18 +4,17 @@ import { Dex, Species } from '@pkmn/dex';
 import { choice } from '../../utils/rand';
 import { Canvas, loadImage } from 'canvas';
 import { MessageAttachment, ReplyMessageOptions } from 'discord.js';
+import { loadCanvasFromUri } from '../../utils/images';
 
 class RandPoke extends Command {
   private static readonly IMAGE_WIDTH = 96;
   private static readonly IMAGE_HEIGHT = 96;
 
   private static async loadCanvas(pokemon: Species): Promise<Canvas> {
-    const canvas = new Canvas(RandPoke.IMAGE_WIDTH, RandPoke.IMAGE_HEIGHT);
-    const context = canvas.getContext('2d');
-    const image = await loadImage(
+    const canvas = await loadCanvasFromUri(
+      RandPoke.IMAGE_WIDTH, RandPoke.IMAGE_HEIGHT,
       `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.num}.png`
     );
-    context.drawImage(image, 0, 0, RandPoke.IMAGE_WIDTH, RandPoke.IMAGE_HEIGHT);
     return canvas;
   }
 
