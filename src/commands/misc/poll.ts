@@ -68,7 +68,7 @@ export class Poll {
             if (value == undefined) {
                 continue;
             }
-            const index = Number.parseInt(value ?? '');
+            const index = typeof value === 'string' ? Number.parseInt(value) : value;
             results.set(this.options[index], reaction.count - 1);
             sum += reaction.count - 1;
         }
@@ -169,12 +169,12 @@ class PollOnReactListener extends Listener {
             return;
         }
 
-        const index = getKeyByValue(Poll.DIGIT_EMOTE_IDS, reaction.emoji.name);
-        if (index == undefined) {
+        const value = getKeyByValue(Poll.DIGIT_EMOTE_IDS, reaction.emoji.name);
+        if (value == undefined) {
             return;
         }
-        const option = poll.options[Number.parseInt(index)];
-        await user.send('You voted for the option: ' + option);
+        const index = typeof value === 'string' ? Number.parseInt(value) : value;
+        await user.send('You voted for the option: ' + poll.options[index]);
     }
 }
 

@@ -22,8 +22,7 @@ class AddCustomCommand extends Command {
             return;
         }
 
-        const customCommand = await bot.repository.createCustomCommand(
-            message.guild.id, commandName, content);
+        const customCommand = await bot.repository.createCustomCommand(message.guild.id, commandName, content);
         if (customCommand === undefined) {
             await message.channel.send('Failed to create custom command.');
             return;

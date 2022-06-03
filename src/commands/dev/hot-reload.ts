@@ -7,7 +7,7 @@ class HotReload extends Command {
     async execute({bot, message}: Context): Promise<void> {
         try {
             await bash('npm run build');
-            const [commands, listeners] = await loadPlugins();
+            const [commands] = await loadPlugins();
             bot.commands = commands;
             await message.channel.send('Reloaded commands.');
         } catch (e) {
