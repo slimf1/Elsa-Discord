@@ -1,8 +1,9 @@
-import {Collection, TextChannel} from 'discord.js';
+import {Collection, GuildChannelCreateOptions, TextChannel} from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
 
-const channelsNeedingConfirmation: Set<string> = new Set();
+const channelsNeedingConfirmationForRegularClean: Set<string> = new Set();
+const channelsNeedingConfirmationForTurboClean: Set<string> = new Set();
 
 class CleanChannel extends Command {
     private static readonly MESSAGES_PER_DELETE = 100;
@@ -25,23 +26,23 @@ class CleanChannel extends Command {
             await message.reply('Please specify a valid channel.');
             return;
         }
-        if (!channelsNeedingConfirmation.has(channel.id)) {
+        if (!channelsNeedingConfirmationForRegularClean.has(channel.id)) {
             await message.reply(`Are you sure you want to clean all messages ${
                     userID ? 'from this user' : ''} in ${channel.name}? ` +
                 'If so, redo the command.');
-            channelsNeedingConfirmation.add(channel.id);
+            channelsNeedingConfirmationForRegularClean.add(channel.id);
             setTimeout(() => {
-                channelsNeedingConfirmation.delete(channel.id);
+                channelsNeedingConfirmationForRegularClean.delete(channel.id);
             }, CleanChannel.CONFIRMATION_TIMEOUT);
             return;
         }
-        channelsNeedingConfirmation.delete(channel.id);
+        channelsNeedingConfirmationForRegularClean.delete(channel.id);
         let messages = await channel.messages.fetch({limit: CleanChannel.MESSAGES_PER_DELETE});
         if (userID) {
             messages = new Collection(
                 [...messages.entries()].filter(([s, m]) => m.author.id === userID));
         }
-        await channel.bulkDelete(messages);
+        await channel.bulkDelete(messages, true);
         await message.channel.send(`Deleted ${messages.size} messages.`);
     }
 
@@ -59,6 +60,38 @@ class CleanChannel extends Command {
     }
 }
 
+class TurboClean extends Command {
+
+    private static readonly CONFIRMATION_TIMEOUT = 15000;
+
+    async execute({bot, args, message}: Context): Promise<void> {
+        const channel = bot.client.channels.cache.get(args) as TextChannel;
+        if (!channelsNeedingConfirmationForTurboClean.has(channel.id)) {
+            await message.reply(`Are you sure you want to clean all messages in ${channel.name}? ` +
+                'This will delete the channel then recreate it. If so, redo the command.');
+            channelsNeedingConfirmationForTurboClean.add(channel.id);
+            setTimeout(() => {
+                channelsNeedingConfirmationForTurboClean.delete(channel.id);
+            }, TurboClean.CONFIRMATION_TIMEOUT);
+            return;
+        }
+        channelsNeedingConfirmationForTurboClean.delete(channel.id);
+        const channelName = channel.name;
+        const channelParent = channel.parent;
+        await channel.delete();
+        const options: GuildChannelCreateOptions = {type: 'GUILD_TEXT', parent: channelParent!};
+        message.guild?.channels.create(channelName, options);
+    }
+
+    name(): string {
+        return 'turbo-clean';
+    }
+
+    isMaintainerOnly(): boolean {
+        return true;
+    }
+}
+
 export default {
-    commands: [CleanChannel]
+    commands: [CleanChannel, TurboClean]
 };
