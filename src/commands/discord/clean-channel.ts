@@ -89,7 +89,7 @@ class TurboClean extends Command {
         const options: GuildChannelCreateOptions = {
             type: 'GUILD_TEXT',
             parent: channelParent!,
-            position: channelPosition,
+            position: channelPosition + 1,
             nsfw: isChannelNsfw,
             topic: channelTopic ?? undefined
         };
