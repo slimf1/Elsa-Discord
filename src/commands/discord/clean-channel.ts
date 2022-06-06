@@ -66,6 +66,10 @@ class TurboClean extends Command {
 
     async execute({bot, args, message}: Context): Promise<void> {
         const channel = bot.client.channels.cache.get(args) as TextChannel;
+        if (!channel || !(channel instanceof TextChannel)) {
+            await message.reply('Please specify a valid channel.');
+            return;
+        }
         if (!channelsNeedingConfirmationForTurboClean.has(channel.id)) {
             await message.reply(`Are you sure you want to clean all messages in ${channel.name}? ` +
                 'This will delete the channel then recreate it. If so, redo the command.');
