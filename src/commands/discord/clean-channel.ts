@@ -78,8 +78,17 @@ class TurboClean extends Command {
         channelsNeedingConfirmationForTurboClean.delete(channel.id);
         const channelName = channel.name;
         const channelParent = channel.parent;
+        const channelPosition = channel.position;
+        const isChannelNsfw = channel.nsfw;
+        const channelTopic = channel.topic;
         await channel.delete();
-        const options: GuildChannelCreateOptions = {type: 'GUILD_TEXT', parent: channelParent!};
+        const options: GuildChannelCreateOptions = {
+            type: 'GUILD_TEXT',
+            parent: channelParent!,
+            position: channelPosition,
+            nsfw: isChannelNsfw,
+            topic: channelTopic ?? undefined
+        };
         message.guild?.channels.create(channelName, options);
     }
 
