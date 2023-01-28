@@ -26,7 +26,7 @@ export interface Module {
 export async function loadPlugins(): Promise<[CommandCollection, Listener[]]> {
     const commands: Map<string, Command> = new Map();
     const listeners: Listener[] = [];
-    const files = (await deepReadDir('./dist/src/commands')).flat() as string[];
+    const files = (await deepReadDir('./dist/src/commands')).flat(Number.MAX_SAFE_INTEGER) as string[];
     const commandFiles = files
         .filter((file: string) => file.endsWith('.js'));
 
