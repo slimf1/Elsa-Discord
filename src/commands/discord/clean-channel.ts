@@ -1,4 +1,4 @@
-import {Collection, GuildChannelCreateOptions, TextChannel} from 'discord.js';
+import {Collection, GuildChannelCreateOptions, GuildMember, TextChannel} from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
 
@@ -16,9 +16,10 @@ class CleanChannel extends Command {
             return;
         }
         const channelID = argsArray[0];
-        let userID: string | null = null;
+        let user: GuildMember | null = null;
         if (argsArray.length >= 2) {
-            userID = argsArray[1].trim();
+            const userID = argsArray[1].trim();
+            user = userID ? (await message.guild?.members.fetch(userID) ?? null) : null;
         }
 
         const channel = bot.client.channels.cache.get(channelID) as TextChannel;
@@ -28,7 +29,7 @@ class CleanChannel extends Command {
         }
         if (!channelsNeedingConfirmationForRegularClean.has(channel.id)) {
             await message.reply(`Are you sure you want to clean all messages ${
-                    userID ? 'from this user' : ''} in ${channel.name}? ` +
+                    user ? `from user "${user.displayName}"`: ''} in ${channel.name}? ` +
                 'If so, redo the command.');
             channelsNeedingConfirmationForRegularClean.add(channel.id);
             setTimeout(() => {
@@ -38,9 +39,10 @@ class CleanChannel extends Command {
         }
         channelsNeedingConfirmationForRegularClean.delete(channel.id);
         let messages = await channel.messages.fetch({limit: CleanChannel.MESSAGES_PER_DELETE});
-        if (userID) {
-            messages = new Collection(
-                [...messages.entries()].filter(([s, m]) => m.author.id === userID && !m.pinned));
+        messages = new Collection([...messages.entries()].filter(([s, m]) => !m.pinned));
+        if (user) {
+            messages = new Collection([...messages.entries()]
+                .filter(([s, m]) => m.author.id === user?.id));
         }
         await channel.bulkDelete(messages, true);
         await message.channel.send(`Deleted ${messages.size} messages.`);
@@ -50,7 +52,7 @@ class CleanChannel extends Command {
         return 'clean-channel';
     }
 
-    override isMaintainerOnly(): boolean {
+    override isWhiteListOnly(): boolean {
         return true;
     }
 
