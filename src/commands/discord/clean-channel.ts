@@ -46,11 +46,16 @@ class CleanChannel extends Command {
             messages = messages.filter(m => m.author.id === user?.id);
         }
         let i = 1;
+        const n = messages.length;
+        await channel.send(`Will delete ${n} messages.`);
+        const mainMsg = await channel.send('Atm...');
+
         for (const message of messages) {
             await message.delete();
-            if (++i % 5 === 0) {
-                await channel.send(`Deleted ${i} messages...`);
-                await sleep(1500);
+            if (++i % 10 === 0) {
+                const ratio = i / n;
+                mainMsg.edit(`Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`);
+                await sleep(1250);
             }
             await sleep(75);
         }
