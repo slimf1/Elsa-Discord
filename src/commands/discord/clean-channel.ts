@@ -3,6 +3,10 @@ import Command from '../../command';
 import Context from '../../context';
 import {fetchAllMessages} from '../../utils/discord';
 
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const channelsNeedingConfirmationForRegularClean: Set<string> = new Set();
 const channelsNeedingConfirmationForTurboClean: Set<string> = new Set();
 
@@ -44,8 +48,16 @@ class CleanChannel extends Command {
         if (user) {
             messages = messages.filter(m => m.author.id === user?.id);
         }
-        await channel.bulkDelete(messages, true);
-        await message.channel.send(`Deleted ${messages.length} messages.`);
+        let i = 1;
+        for (const message of messages) {
+            await message.delete();
+            if (++i % 5 === 0) {
+                await channel.send(`Deleted ${i} messages...`);
+                await sleep(1500);
+            }
+            await sleep(75);
+        }
+        await channel.send(`Done : Deleted ${i} messages.`);
     }
 
     name(): string {
