@@ -40,7 +40,7 @@ class CleanChannel extends Command {
         let messages = await channel.messages.fetch({limit: CleanChannel.MESSAGES_PER_DELETE});
         if (userID) {
             messages = new Collection(
-                [...messages.entries()].filter(([s, m]) => m.author.id === userID));
+                [...messages.entries()].filter(([s, m]) => m.author.id === userID && !m.pinned));
         }
         await channel.bulkDelete(messages, true);
         await message.channel.send(`Deleted ${messages.size} messages.`);
