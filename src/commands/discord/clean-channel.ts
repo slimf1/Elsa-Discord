@@ -1,6 +1,7 @@
 import {Collection, GuildChannelCreateOptions, GuildMember, TextChannel} from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
+import {fetchAllMessages} from '../../utils/discord';
 
 const channelsNeedingConfirmationForRegularClean: Set<string> = new Set();
 const channelsNeedingConfirmationForTurboClean: Set<string> = new Set();
@@ -38,14 +39,13 @@ class CleanChannel extends Command {
             return;
         }
         channelsNeedingConfirmationForRegularClean.delete(channel.id);
-        let messages = await channel.messages.fetch({limit: CleanChannel.MESSAGES_PER_DELETE});
-        messages = new Collection([...messages.entries()].filter(([s, m]) => !m.pinned));
+        let messages = await fetchAllMessages(channel);
+        messages = messages.filter((m => !m.pinned));
         if (user) {
-            messages = new Collection([...messages.entries()]
-                .filter(([s, m]) => m.author.id === user?.id));
+            messages = messages.filter(m => m.author.id === user?.id);
         }
         await channel.bulkDelete(messages, true);
-        await message.channel.send(`Deleted ${messages.size} messages.`);
+        await message.channel.send(`Deleted ${messages.length} messages.`);
     }
 
     name(): string {
