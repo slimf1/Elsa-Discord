@@ -51,7 +51,7 @@ class CleanChannel extends Command {
         let i = 1;
         for (const message of messages) {
             await message.delete();
-            if (++i % 10 === 0) {
+            if (++i % 5 === 0) {
                 await channel.send(`Deleted ${i} messages...`);
                 await sleep(1500);
             }
