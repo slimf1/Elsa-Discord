@@ -18,3 +18,7 @@ export async function bash(command: string): Promise<ExecResult> {
 export function getKeyByValue<T>(object: Dict<T>, value: T): string | number | undefined {
     return Object.keys(object).find(key => object[key] === value);
 }
+
+export function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

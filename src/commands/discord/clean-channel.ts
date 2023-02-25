@@ -2,10 +2,7 @@ import {Collection, GuildChannelCreateOptions, GuildMember, TextChannel} from 'd
 import Command from '../../command';
 import Context from '../../context';
 import {fetchAllMessages} from '../../utils/discord';
-
-function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+import {sleep} from '../../utils';
 
 const channelsNeedingConfirmationForRegularClean: Set<string> = new Set();
 const channelsNeedingConfirmationForTurboClean: Set<string> = new Set();
