@@ -12,6 +12,7 @@ export interface IBot {
     client: Client;
     commands: CommandCollection;
     repository: IBotRepository;
+    isCleaning: boolean;
 
     addListeners(listener: Listener[]): void;
 
@@ -24,6 +25,7 @@ export class Bot implements IBot {
     readonly trigger: string;
     readonly repository: IBotRepository;
     commands: CommandCollection;
+    isCleaning = false;
 
     constructor(client: Client,
                 commands: CommandCollection,

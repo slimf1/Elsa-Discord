@@ -17,6 +17,10 @@ class CleanChannel extends Command {
             await message.channel.send('Please specify a channel to clean.');
             return;
         }
+        if (bot.isCleaning) {
+            await message.channel.send('A clean is currently ongoing.');
+            return;
+        }
         const channelID = argsArray[0];
         let user: GuildMember | null = null;
         if (argsArray.length >= 2) {
@@ -48,7 +52,8 @@ class CleanChannel extends Command {
         let i = 1;
         const n = messages.length;
         await channel.send(`Will delete ${n} messages.`);
-        const mainMsg = await channel.send('Atm...');
+        const mainMsg = await channel.send('Starting....');
+        bot.isCleaning = true;
 
         for (const message of messages) {
             await message.delete();
@@ -59,7 +64,8 @@ class CleanChannel extends Command {
             }
             await sleep(75);
         }
-        await channel.send(`Done : Deleted ${i} messages.`);
+        bot.isCleaning = false;
+        await channel.send(`Done : Deleted ${i - 1} messages.`);
     }
 
     name(): string {
