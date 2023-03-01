@@ -85,6 +85,9 @@ export async function parseCustomCommand(bot: IBot, message: Message) {
         'atan': (value: number): number => Math.atan(value),
         'atan2': (y: number, x: number): number => Math.atan2(y, x),
         'round': (value: number, fractionDigits: number): string => value.toFixed(fractionDigits),
+        'iif': (expression: boolean, valueIfTrue: unknown, valueIfFalse: unknown): unknown => {
+            return expression ? valueIfTrue : valueIfFalse;
+        }
     };
 
     const binaryOperators: FunctionMap = {
@@ -94,6 +97,8 @@ export async function parseCustomCommand(bot: IBot, message: Message) {
         '/': (a: number, b: number): number => a / b,
         '%': (a: number, b: number): number => a % b,
         '**': (a: number, b: number): number => a ** b,
+        '&&': (a: boolean, b: boolean): boolean => a && b,
+        '||': (a: boolean, b: boolean): boolean => a || b,
     };
 
     const predefinedIdentifiers: FunctionMap = {
