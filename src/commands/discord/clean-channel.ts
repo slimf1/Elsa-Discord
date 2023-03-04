@@ -44,6 +44,7 @@ class CleanChannel extends Command {
             return;
         }
         channelsNeedingConfirmationForRegularClean.delete(channel.id);
+        bot.isCleaning = true;
         let messages = await fetchAllMessages(channel);
         messages = messages.filter((m => !m.pinned));
         if (user) {
@@ -53,7 +54,6 @@ class CleanChannel extends Command {
         const n = messages.length;
         await channel.send(`Will delete ${n} messages.`);
         const mainMsg = await channel.send('Starting....');
-        bot.isCleaning = true;
 
         for (const message of messages) {
             await message.delete();
