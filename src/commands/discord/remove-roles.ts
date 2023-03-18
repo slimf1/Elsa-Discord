@@ -16,9 +16,7 @@ class RemoveRoles extends Command {
         const roles = await message.guild?.roles.fetch();
         let i = 0;
         for (const role of roles?.values() ?? []) {
-            if (role.id in user.roles.cache) {
-                await user.roles.remove(role);
-            }
+            await user.roles.remove(role);
             if (i++ % 5 === 0) {
                 await sleep(1000);
             }
