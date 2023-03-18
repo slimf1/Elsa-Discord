@@ -1,5 +1,6 @@
 import Command from '../../command';
 import Context from '../../context';
+import {sleep} from '../../utils';
 
 class RemoveRoles extends Command {
     async execute({message, args}: Context): Promise<void> {
@@ -12,8 +13,12 @@ class RemoveRoles extends Command {
             await message.reply('Could not find the user');
             return;
         }
+        let i = 0;
         for (const [roleId, _] of user.roles.cache) {
             await user.roles.remove(roleId);
+            if (i++ % 5 === 0) {
+                await sleep(1000);
+            }
         }
         await message.reply('Removed roles');
     }
