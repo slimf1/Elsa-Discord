@@ -24,12 +24,10 @@ export default abstract class Command {
             return false;
         }
         const whitelistUserIds = process.env.WHITELIST?.split(';') ?? [];
-        if (this.isWhiteListOnly() && member && !whitelistUserIds.includes(member.id)) {
+        if (this.isWhiteListOnly() && !whitelistUserIds.includes(member?.id ?? '')) {
             return false;
         }
-        return !!whitelistUserIds
-            && !!member
-            && whitelistUserIds.includes(member.id);
+        return true;
     }
 
     isMaintainerOnly(): boolean {
