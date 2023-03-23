@@ -1,12 +1,8 @@
-import {MessageAttachment} from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
-import {loadCanvasFromUri} from '../../utils/images';
 import {getValorantMMRData, getValorantUserData, UserDataResponse} from './calls';
 
 class ValorantRank extends Command {
-
-    private static readonly AVATAR_DIMENSION = 128;
 
     async execute({message, args}: Context): Promise<void> {
         let userDataResponse: UserDataResponse | undefined = undefined;
@@ -31,9 +27,6 @@ class ValorantRank extends Command {
             response += `*Tier*: ${mmrData.currenttierpatched}, ${mmrData.ranking_in_tier} RR\n`;
         }
 
-        const canvas = await loadCanvasFromUri(ValorantRank.AVATAR_DIMENSION,
-            ValorantRank.AVATAR_DIMENSION, userData.card.small);
-        await message.channel.send({files: [new MessageAttachment(canvas.toBuffer(), 'avatar.png')]});
         await message.channel.send(response);
     }
 

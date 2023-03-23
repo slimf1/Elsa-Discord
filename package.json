@@ -21,7 +21,6 @@
   "dependencies": {
     "@pkmn/dex": "^0.7.28",
     "axios": "^1.3.4",
-    "canvas": "^2.11.0",
     "decache": "^4.6.1",
     "discord.js": "^13.13.1",
     "dotenv": "^16.0.3",
