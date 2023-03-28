@@ -27,7 +27,7 @@ class AddCustomCommand extends Command {
             await message.channel.send('Failed to create custom command.');
             return;
         }
-        await message.channel.send(`Created custom command ${commandName} with content "${content}".`);
+        await message.channel.send(`:white_check_mark: Created custom command ${commandName} successfully.`);
     }
 
     name(): string {
