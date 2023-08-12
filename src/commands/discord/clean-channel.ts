@@ -11,7 +11,11 @@ class CleanChannel extends Command {
     private static readonly MESSAGES_PER_DELETE = 100;
     private static readonly CONFIRMATION_TIMEOUT = 15000;
 
+    private static readonly USER_REGEX = /<@(\d+)>/;
+    private static readonly CHANNEL_REGEX = /<#(\d+)>/;
+
     async execute({bot, message, args}: Context): Promise<void> {
+        console.log({ message, args });
         const argsArray = args.split(',');
         if (argsArray.length < 1) {
             await message.channel.send('Please specify a channel to clean.');
@@ -21,13 +25,19 @@ class CleanChannel extends Command {
             await message.channel.send('A clean is currently ongoing.');
             return;
         }
-        const channelID = argsArray[0];
+        const channelMatch = argsArray[0].match(CleanChannel.CHANNEL_REGEX);
+        const channelID = channelMatch ? channelMatch[1] : null;
         let user: GuildMember | null = null;
         if (argsArray.length >= 2) {
-            const userID = argsArray[1].trim();
+            const userMatch = argsArray[1].match(CleanChannel.USER_REGEX);
+            const userID = userMatch ? userMatch[1] : null;
             user = userID ? (await message.guild?.members.fetch(userID) ?? null) : null;
         }
 
+        if (channelID == null) {
+            await message.channel.send('Could not find this channel.');
+            return;
+        }
         const channel = bot.client.channels.cache.get(channelID) as TextChannel;
         if (!channel || !(channel instanceof TextChannel)) {
             await message.reply('Please specify a valid channel.');
@@ -59,7 +69,11 @@ class CleanChannel extends Command {
             await message.delete();
             if (++i % 10 === 0) {
                 const ratio = i / n;
-                mainMsg.edit(`Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`);
+                try {
+                    mainMsg.edit(`Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`);
+                } catch (err) {
+                    console.error(`Could not edit the message : ${err}`);
+                }
                 await sleep(1250);
             }
             await sleep(75);
