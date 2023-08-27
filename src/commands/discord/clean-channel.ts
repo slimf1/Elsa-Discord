@@ -64,7 +64,7 @@ class CleanChannel extends Command {
         const n = messages.length;
         await channel.send(`Will delete ${n} messages.`);
         const mainMsg = await channel.send('Starting....');
-        const mainMsgID = mainMsg.id;
+        let mainMsgID = mainMsg.id;
 
         for (const message of messages) {
             await message.delete();
@@ -76,7 +76,8 @@ class CleanChannel extends Command {
                     if (mainMsgFetch) {
                         await mainMsgFetch.edit(deletionProgress);
                     } else {
-                        await channel.send(deletionProgress);
+                        const newMainMsg = await channel.send(deletionProgress);
+                        mainMsgID = newMainMsg.id;
                     }
                 } catch (err) {
                     console.error(`Could not edit the message : ${err}`);
