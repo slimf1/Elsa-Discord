@@ -64,13 +64,17 @@ class CleanChannel extends Command {
         const n = messages.length;
         await channel.send(`Will delete ${n} messages.`);
         const mainMsg = await channel.send('Starting....');
+        const mainMsgID = mainMsg.id;
 
         for (const message of messages) {
             await message.delete();
             if (++i % 10 === 0) {
                 const ratio = i / n;
                 try {
-                    mainMsg.edit(`Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`);
+                    const mainMsgFetch = await message.channel.messages.fetch(mainMsgID);
+                    if (mainMsgFetch) {
+                        mainMsg.edit(`Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`);
+                    }
                 } catch (err) {
                     console.error(`Could not edit the message : ${err}`);
                 }
