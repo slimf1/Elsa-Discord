@@ -72,8 +72,11 @@ class CleanChannel extends Command {
                 const ratio = i / n;
                 try {
                     const mainMsgFetch = await message.channel.messages.fetch(mainMsgID);
+                    const deletionProgress = `Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`;
                     if (mainMsgFetch) {
-                        mainMsg.edit(`Deleted ${i}/${n} messages... [${(ratio * 100).toFixed(1)}%]`);
+                        await mainMsgFetch.edit(deletionProgress);
+                    } else {
+                        await channel.send(deletionProgress);
                     }
                 } catch (err) {
                     console.error(`Could not edit the message : ${err}`);
