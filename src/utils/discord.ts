@@ -23,3 +23,14 @@ export async function fetchAllMessages(channel: TextChannel): Promise<Message<bo
     console.log('returns '+ messages.length + ' messages');
     return messages;
 }
+
+export function extractChannelID(text: string): string | null {
+    const channelMatch = text.match(/<#(\d+)>/);
+    return channelMatch ? channelMatch[1] : null;
+}
+
+export function extractUserID(text: string): string | null {
+    const channelMatch = text.match(/<@(\d+)>/);
+    return channelMatch ? channelMatch[1] : null;
+}
+

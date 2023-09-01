@@ -1,7 +1,7 @@
-import {Collection, GuildChannelCreateOptions, GuildMember, TextChannel} from 'discord.js';
+import {GuildChannelCreateOptions, GuildMember, TextChannel} from 'discord.js';
 import Command from '../../command';
 import Context from '../../context';
-import {fetchAllMessages} from '../../utils/discord';
+import {extractChannelID, extractUserID, fetchAllMessages} from '../../utils/discord';
 import {sleep} from '../../utils';
 
 const channelsNeedingConfirmationForRegularClean: Set<string> = new Set();
@@ -10,9 +10,6 @@ const channelsNeedingConfirmationForTurboClean: Set<string> = new Set();
 class CleanChannel extends Command {
     private static readonly MESSAGES_PER_DELETE = 100;
     private static readonly CONFIRMATION_TIMEOUT = 15000;
-
-    private static readonly USER_REGEX = /<@(\d+)>/;
-    private static readonly CHANNEL_REGEX = /<#(\d+)>/;
 
     async execute({bot, message, args}: Context): Promise<void> {
         console.log({ message, args });
@@ -25,12 +22,10 @@ class CleanChannel extends Command {
             await message.channel.send('A clean is currently ongoing.');
             return;
         }
-        const channelMatch = argsArray[0].match(CleanChannel.CHANNEL_REGEX);
-        const channelID = channelMatch ? channelMatch[1] : null;
+        const channelID = extractChannelID(argsArray[0]);
         let user: GuildMember | null = null;
         if (argsArray.length >= 2) {
-            const userMatch = argsArray[1].match(CleanChannel.USER_REGEX);
-            const userID = userMatch ? userMatch[1] : null;
+            const userID = extractUserID(argsArray[1]);
             user = userID ? (await message.guild?.members.fetch(userID) ?? null) : null;
         }
 
@@ -38,7 +33,7 @@ class CleanChannel extends Command {
             await message.channel.send('Could not find this channel.');
             return;
         }
-        const channel = bot.client.channels.cache.get(channelID) as TextChannel;
+        const channel = bot.client.channels.cache.get(channelID);
         if (!channel || !(channel instanceof TextChannel)) {
             await message.reply('Please specify a valid channel.');
             return;

@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {DataSource, Repository} from 'typeorm';
 import {CustomCommand} from './entity/custom-command';
+import {TournamentDirector} from './entity/tournament-director';
 
 export interface IBotRepository {
     getCustomCommands(guild: string): Promise<CustomCommand[]>;
@@ -10,6 +11,14 @@ export interface IBotRepository {
     createCustomCommand(guild: string, name: string, content: string): Promise<CustomCommand>;
 
     deleteCustomCommand(guild: string, name: string): Promise<boolean>;
+
+    getTournamentDirector(id: string): Promise<TournamentDirector | null>;
+
+    addTournamentDirector(id: string): Promise<TournamentDirector>;
+
+    removeTournamentDirector(id: string): Promise<boolean>;
+
+    getTournamentDirectors(): Promise<TournamentDirector[]>;
 }
 
 export class BotRepository implements IBotRepository {
@@ -17,18 +26,20 @@ export class BotRepository implements IBotRepository {
     private readonly dataSource: DataSource;
 
     private customCommandRepository: Repository<CustomCommand> | null = null;
+    private tournamentDirectorRepository: Repository<TournamentDirector> | null = null;
 
     constructor() {
         this.dataSource = new DataSource({
             type: 'sqlite',
             database: './database.sqlite',
-            entities: [CustomCommand],
+            entities: [CustomCommand, TournamentDirector],
             synchronize: true,
             logging: process.env.LOG_DB === 'true',
         });
-        this.dataSource.initialize().then(db =>
-            this.customCommandRepository = db.getRepository(CustomCommand)
-        );
+        this.dataSource.initialize().then(db => {
+            this.customCommandRepository = db.getRepository(CustomCommand);
+            this.tournamentDirectorRepository = db.getRepository(TournamentDirector);
+        });
     }
 
     async getCustomCommand(guild: string, name: string): Promise<CustomCommand | null> {
@@ -46,5 +57,22 @@ export class BotRepository implements IBotRepository {
     async deleteCustomCommand(guild: string, name: string): Promise<boolean> {
         const deleteResult = await this.customCommandRepository!.delete({guild, name});
         return deleteResult.affected === 1;
+    }
+
+    async getTournamentDirector(id: string): Promise<TournamentDirector | null> {
+        return this.tournamentDirectorRepository!.findOne({where: {id}});
+    }
+
+    async addTournamentDirector(id: string): Promise<TournamentDirector> {
+        return this.tournamentDirectorRepository!.save(new TournamentDirector(id));
+    }
+
+    async removeTournamentDirector(id: string): Promise<boolean> {
+        const removeResult = await this.tournamentDirectorRepository!.delete({id});
+        return removeResult.affected === 1;
+    }
+
+    async getTournamentDirectors(): Promise<TournamentDirector[]> {
+        return this.tournamentDirectorRepository!.find();
     }
 }
