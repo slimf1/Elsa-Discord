@@ -55,7 +55,7 @@ class RemoveTournamentDirector extends Command {
         }
 
         try {
-            await bot.repository.removeTournamentDirector(userID);
+            await bot.repository.deleteTournamentDirector(userID);
             await message.reply(`Removed tournament director : <@${userID}>`);
         } catch (error) {
             console.error('Error while removing tournament director: '+ error);
@@ -85,10 +85,6 @@ class ListTournamentDirector extends Command {
 
     name(): string {
         return 'tournament-directors';
-    }
-
-    override isMaintainerOnly(): boolean {
-        return true;
     }
 }
 

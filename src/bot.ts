@@ -84,8 +84,8 @@ export class Bot implements IBot {
         if (this.commands.has(command)) {
             const commandInstance = this.commands.get(command);
             try {
-                if (commandInstance?.canExecute(message.member)) {
-                    await commandInstance.execute(new Context(this, message, args, command));
+                if (await commandInstance?.canExecute(message.member)) {
+                    await commandInstance?.execute(new Context(this, message, args, command));
                 }
             } catch (e) {
                 console.error('Command execution crashed: '+ e);
