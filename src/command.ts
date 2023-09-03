@@ -26,9 +26,7 @@ export default abstract class Command {
         }
         if (this.isTournamentDirectorOnly() && member?.id) {
             const tournamentDirector = await bot?.repository?.getTournamentDirector(member.id);
-            if (tournamentDirector) {
-                return true;
-            }
+            return !!tournamentDirector;
         }
 
         const whitelistUserIds = process.env.WHITELIST?.split(';') ?? [];
