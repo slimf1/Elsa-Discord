@@ -117,7 +117,7 @@ class ListTeams extends Command {
             output += '\n';
         }
 
-        await message.reply(output);
+        await message.channel.send({content: output, allowedMentions: {parse: []}});
     }
 
     name(): string {
