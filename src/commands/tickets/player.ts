@@ -46,6 +46,12 @@ class AddPlayerToTeam extends Command {
             return;
         }
 
+        const teamFromCaptain = await bot.repository.getTeamFromCaptainID(playerID);
+        if (teamFromCaptain) {
+            await message.reply('The player is already a team captain.');
+            return;
+        }
+
         const tournamentDirector = await bot?.repository?.getTournamentDirector(message.author.id);
         const hasRightsToAdd = !!tournamentDirector
             || message.author.id === process.env.MAINTAINER

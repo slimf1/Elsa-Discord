@@ -26,6 +26,8 @@ export interface IBotRepository {
 
     getTeams(): Promise<Team[]>;
 
+    getTeamFromCaptainID(captainID: string): Promise<Team | null>;
+
     addTeam(id: string, name: string, captainID: string): Promise<Team>;
 
     deleteTeam(id: string): Promise<boolean>;
@@ -109,6 +111,10 @@ export class BotRepository implements IBotRepository {
 
     getTeams(): Promise<Team[]> {
         return this.teamRepository!.find();
+    }
+
+    getTeamFromCaptainID(captainID: string): Promise<Team | null> {
+        return this.teamRepository!.findOne({where: {captainID}});
     }
 
     addPlayer(playerID: string, team: Team): Promise<Player> {
