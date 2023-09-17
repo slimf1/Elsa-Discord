@@ -7,4 +7,9 @@ export class Player {
 
     @ManyToOne(() => Team, (team) => team.players)
     team!: Team;
+
+    constructor(playerID: string, team: Team) {
+        this.id = playerID;
+        this.team = team;
+    }
 }

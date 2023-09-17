@@ -29,6 +29,10 @@ export interface IBotRepository {
     addTeam(id: string, name: string, captainID: string): Promise<Team>;
 
     deleteTeam(id: string): Promise<boolean>;
+
+    addPlayer(playerID: string, team: Team): Promise<Player>;
+
+    removePlayer(playerID: string): Promise<boolean>;
 }
 
 export class BotRepository implements IBotRepository {
@@ -105,5 +109,14 @@ export class BotRepository implements IBotRepository {
 
     getTeams(): Promise<Team[]> {
         return this.teamRepository!.find();
+    }
+
+    addPlayer(playerID: string, team: Team): Promise<Player> {
+        return this.playerRepository!.save(new Player(playerID, team));
+    }
+
+    async removePlayer(playerID: string): Promise<boolean> {
+        const removeResult = await this.playerRepository!.delete({id: playerID});
+        return removeResult.affected === 1;
     }
 }

@@ -48,7 +48,7 @@ class AddTournamentTeam extends Command {
 
         try {
             await bot.repository.addTeam(teamID, teamName, captainID);
-            await message.reply(`Added new team with ${teamName} with captain <@${captainID}>`);
+            await message.reply(`Added new team "${teamName}" with captain <@${captainID}>`);
         } catch (error) {
             console.error('Error while adding new team: ' + error);
             await message.reply(`An error occured : ${error}`);
@@ -105,10 +105,13 @@ class ListTeams extends Command {
         const teams = await bot.repository.getTeams();
         if (teams.length === 0) {
             await message.reply('No teams found.');
+            return;
         }
 
-        await message
-            .reply(`Teams: ${teams.map(team => `${team.name} (Cap: <@${team.captainID}>)`).join(', ')}`);
+        console.log({teams});
+        await message.reply(
+            `Teams: ${teams.map(team => `${team.name} (Cap: <@${team.captainID}>) : ${team.players?.map(player => `<@${player.id}>`).join(', ')}`).join(', ')}`
+        );
     }
 
     name(): string {
