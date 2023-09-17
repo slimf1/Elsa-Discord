@@ -1,4 +1,4 @@
-import {Column, Entity, OneToMany, PrimaryColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, OneToMany, PrimaryColumn} from 'typeorm';
 import {Player} from './player';
 
 @Entity()
@@ -14,6 +14,7 @@ export class Team {
     @Column({type: 'text'}) name!: string;
     @Column({type: 'text'}) captainID!: string;
 
-    @OneToMany(() => Player, (player) => player.team)
+    @OneToMany(() => Player, (player) => player.team, {eager: true})
+    @JoinColumn()
     players!: Player[];
 }

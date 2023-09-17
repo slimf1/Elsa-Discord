@@ -108,10 +108,16 @@ class ListTeams extends Command {
             return;
         }
 
-        console.log({teams});
-        await message.reply(
-            `Teams: ${teams.map(team => `${team.name} (Cap: <@${team.captainID}>) : ${team.players?.map(player => `<@${player.id}>`).join(', ')}`).join(', ')}`
-        );
+        let output = '# Teams\n';
+        for (const team of teams) {
+            output += `${team.name} (Cap: <@${team.captainID}>)`;
+            if (team.players) {
+                output += team.players.map(player => `<@${player.id}>`);
+            }
+            output += '\n';
+        }
+
+        await message.reply(output);
     }
 
     name(): string {
