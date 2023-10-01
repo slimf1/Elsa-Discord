@@ -32,6 +32,8 @@ export interface IBotRepository {
 
     deleteTeam(id: string): Promise<boolean>;
 
+    getTeamFromPlayerID(playerID: string): Promise<Team | null>;
+
     addPlayer(playerID: string, team: Team): Promise<Player>;
 
     removePlayer(playerID: string): Promise<boolean>;
@@ -103,6 +105,18 @@ export class BotRepository implements IBotRepository {
     async deleteTeam(id: string): Promise<boolean> {
         const deleteResult = await this.teamRepository!.delete({id});
         return deleteResult.affected === 1;
+    }
+
+    async getTeamFromPlayerID(playerID: string): Promise<Team | null> {
+        // TODO : write with typeorm
+        const queryResult = await this
+            .dataSource
+            .query('SELECT t.* FROM player p LEFT JOIN team t ON t.id = p.teamId WHERE p.id = $1', [playerID]);
+        const element = queryResult[0];
+        if (!(element satisfies Team) || !element) {
+            return null;
+        }
+        return element as Team;
     }
 
     getTeam(id: string): Promise<Team | null> {
