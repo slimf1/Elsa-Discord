@@ -20,7 +20,8 @@ class CreateTicket extends Command {
         const opponentTeam = await bot.repository.getTeamFromPlayerID(userID);
         const playerTeam = await bot.repository.getTeamFromPlayerID(message.author.id);
 
-        if (opponentTeam?.id === playerTeam?.id) {
+
+        if ((!opponentTeam || !playerTeam) || (opponentTeam?.id === playerTeam?.id)) {
             return;
         }
 
