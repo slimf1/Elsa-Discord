@@ -10,11 +10,14 @@ async function run() {
     const [commands, listeners] = await loadPlugins();
     const repository = new BotRepository();
     const client = new Client({
+        partials: [
+            'CHANNEL'
+        ],
         intents: [
             Intents.FLAGS.GUILDS,
             Intents.FLAGS.GUILD_MESSAGES,
             Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-            Intents.FLAGS.DIRECT_MESSAGES,
+            Intents.FLAGS.DIRECT_MESSAGES
         ]
     });
     const bot = new Bot(client, commands, process.env.TRIGGER ?? '!', repository);

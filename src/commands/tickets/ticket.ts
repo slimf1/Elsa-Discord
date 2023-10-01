@@ -8,7 +8,7 @@ class CreateTicket extends Command {
     async execute({message, bot, args}: Context): Promise<void> {
         const userID = extractUserID(args);
         if (userID === null) {
-            await message.reply('Could not retrieve user.');
+            await message.reply('L\'utilisateur n\'a pas été trouvé.');
             return;
         }
 
@@ -19,6 +19,11 @@ class CreateTicket extends Command {
 
         const opponentTeam = await bot.repository.getTeamFromPlayerID(userID);
         const playerTeam = await bot.repository.getTeamFromPlayerID(message.author.id);
+
+        if (opponentTeam?.id === playerTeam?.id) {
+            return;
+        }
+
         const tournamentDirectors = await bot.repository.getTournamentDirectors();
 
         const userIdsToInvite = [userID, message.author.id, opponentTeam?.captainID, playerTeam?.captainID,
@@ -29,7 +34,7 @@ class CreateTicket extends Command {
 
         await thread.send(`Un nouveau ticket a été créé par <@${message.author.id}> à propos de <@${userID}>`);
         await thread.send('Les directeurs des tournois et les capitaines de chaque équipe ont été invités.');
-        console.log('DEBUG: joueurs invités: '+ userIdsToInvite.map(t => `<@${t}>`).join(', '));
+        console.log('DEBUG: joueurs invités: '+ userIdsToInvite.join(', '));
     }
 
     name(): string {

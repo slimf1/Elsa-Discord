@@ -61,7 +61,14 @@ export class Bot implements IBot {
     }
 
     async onMessageCreate(message: Message) {
+        console.debug('Received message: '+ message.content);
+
         if (!message.content.startsWith(this.trigger)) {
+            return;
+        }
+
+        console.log(message.author);
+        if (message.channel.type === 'DM' && !message.content.startsWith('-ticket')) {
             return;
         }
 
