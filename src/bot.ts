@@ -84,7 +84,7 @@ export class Bot implements IBot {
 
         const authorizedChannels = process.env.AUTHORIZED_CHANNELS?.split(';') ?? [];
         if (message.author.id === this.client.user?.id
-            || (message.member?.id !== process.env.MAINTAINER && !authorizedChannels.includes(message.channelId))) {
+            || (message.channel.type !== 'DM' && (message.member?.id !== process.env.MAINTAINER && !authorizedChannels.includes(message.channelId)))) {
             return;
         }
 
@@ -96,6 +96,7 @@ export class Bot implements IBot {
                 }
             } catch (e) {
                 console.error('Command execution crashed: '+ e);
+                console.error(e);
             }
         }
     }

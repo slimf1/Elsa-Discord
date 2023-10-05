@@ -1,4 +1,4 @@
-import {BaseGuildTextChannel, TextChannel, ThreadChannel} from 'discord.js';
+import {TextChannel, ThreadChannel} from 'discord.js';
 
 export async function createPrivateThread(channel: TextChannel,
                                           allowedUsersIds: string[],
@@ -13,7 +13,12 @@ export async function createPrivateThread(channel: TextChannel,
     });
 
     for (const allowedUserId of allowedUsersIds) {
-        await thread.members.add(allowedUserId);
+        try {
+            await thread.members.add(allowedUserId);
+        } catch (error) {
+            console.error(`Could not add member with id ${allowedUserId} to thread ${threadName}`);
+            console.error(error);
+        }
     }
 
     return thread;

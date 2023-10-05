@@ -1,23 +1,29 @@
 import Command from '../../command';
 import Context from '../../context';
-import {extractUserID} from '../../utils/discord';
 import {createPrivateThread} from '../../utils/threads';
 import {TextChannel} from 'discord.js';
+import {toLowerAlphaNum} from '../../utils/text';
 
 class CreateTicket extends Command {
     async execute({message, bot, args}: Context): Promise<void> {
-        const userID = extractUserID(args);
-        if (userID === null) {
-            await message.reply('L\'utilisateur n\'a pas été trouvé.');
-            return;
-        }
-
-        const channel = message.channel as TextChannel;
+        const guild = await message.client.guilds.fetch('489748586561536001');
+        const channel = await guild?.channels.fetch('495494277934088193');
         if (!channel) {
+            console.debug('Could not get channel for new ticket');
             return;
         }
 
-        const opponentTeam = await bot.repository.getTeamFromPlayerID(userID);
+        const targetMemberUsername = toLowerAlphaNum(args);
+        const targetMember = (await guild.members.fetch())
+            .find(member => toLowerAlphaNum(member.user.username) === targetMemberUsername);
+
+        if (!targetMember) {
+            await message.reply('Impossible de trouver l\'utilisateur.');
+            return;
+        }
+        const userID = targetMember.id;
+
+        const opponentTeam = await bot.repository.getTeamFromPlayerID(targetMember.id);
         const playerTeam = await bot.repository.getTeamFromPlayerID(message.author.id);
 
 
@@ -31,7 +37,7 @@ class CreateTicket extends Command {
             ...tournamentDirectors.map(t => t.id)].filter(item => !!item) as string[];
 
         const ticketName = `Ticket ${playerTeam?.name} vs. ${opponentTeam?.name}`;
-        const thread = await createPrivateThread(channel, userIdsToInvite, ticketName);
+        const thread = await createPrivateThread(channel as TextChannel, userIdsToInvite, ticketName);
 
         await thread.send(`Un nouveau ticket a été créé par <@${message.author.id}> à propos de <@${userID}>`);
         await thread.send('Les directeurs des tournois et les capitaines de chaque équipe ont été invités.');
