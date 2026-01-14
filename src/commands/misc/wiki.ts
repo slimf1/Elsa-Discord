@@ -3,6 +3,7 @@
 import axios from 'axios';
 import Command from '../../command';
 import Context from '../../context';
+import { axiosInstance } from '../../http-client';
 
 class Wiki extends Command {
     async execute({message, args, command}: Context): Promise<void> {
@@ -11,7 +12,7 @@ class Wiki extends Command {
             return;
         }
         const lang = command.includes('-') ? command.split('-')[1] : 'fr';
-        const searchData = (await axios.get(
+        const searchData = (await axiosInstance.get(
             `https://${lang}.wikipedia.org/w/api.php`,
             {
                 params: {
@@ -31,7 +32,7 @@ class Wiki extends Command {
         if (title.toLowerCase().includes('homonymie')) {
             title = pages[1]['title'];
         }
-        const pageData = (await axios.get(`https://${lang}.wikipedia.org/w/api.php`,
+        const pageData = (await axiosInstance.get(`https://${lang}.wikipedia.org/w/api.php`,
             {
                 params: {
                     'action': 'query',
