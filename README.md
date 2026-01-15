@@ -1,8 +1,27 @@
 # Elsa-Discord
 
+A feature-rich Discord bot built with TypeScript, Discord.js, and TypeORM. Combines utility management, gaming features, and entertainment commands in a single bot.
+
+## Features
+
+- **Modular command architecture** - Easy to extend with new commands
+- **Database integration** - SQLite with TypeORM for persistent data
+- **Hot reload support** - Update commands without restarting the bot
+- **Permission-based access** - Role and channel-based authorization
+- **Custom commands** - Users can create custom commands dynamically
+- **Multiple integrations** - Pokemon, Valorant, translation, and more
+
 ## Setup
 
-Rename the `.env.example` file to `.env` and fill in the details.
+### Prerequisites
+
+- Node.js 16.x - 17.x
+- npm or yarn
+- A Discord bot token
+
+### Installation
+
+1. Rename `.env.example` to `.env` and fill in the required values:
 
 The following environment variables are required:
 | Variable | Description |
