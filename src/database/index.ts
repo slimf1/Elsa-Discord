@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {DataSource, Repository} from 'typeorm';
 import {CustomCommand} from './entity/custom-command';
+import { ChatBotPersonality } from './entity/conversation-context';
 
 export interface IBotRepository {
     getCustomCommands(guild: string): Promise<CustomCommand[]>;
@@ -10,25 +11,40 @@ export interface IBotRepository {
     createCustomCommand(guild: string, name: string, content: string): Promise<CustomCommand>;
 
     deleteCustomCommand(guild: string, name: string): Promise<boolean>;
+
+    createChatBotPersonality(id: string, provider: string, systemPrompt: string): Promise<ChatBotPersonality>;
+
+    getChatBotPersonality(id: string): Promise<ChatBotPersonality | null>;
 }
 
+// TODO : ne pas tout mettre dans un même repo
 export class BotRepository implements IBotRepository {
 
     private readonly dataSource: DataSource;
 
     private customCommandRepository: Repository<CustomCommand> | null = null;
+    private chatBotRepository: Repository<ChatBotPersonality> | null = null;
 
     constructor() {
         this.dataSource = new DataSource({
             type: 'sqlite',
             database: './database.sqlite',
-            entities: [CustomCommand],
+            entities: [CustomCommand, ChatBotPersonality],
             synchronize: true,
             logging: process.env.LOG_DB === 'true',
         });
-        this.dataSource.initialize().then(db =>
-            this.customCommandRepository = db.getRepository(CustomCommand)
-        );
+        this.dataSource.initialize().then(db => {
+            this.customCommandRepository = db.getRepository(CustomCommand);
+            this.chatBotRepository = db.getRepository(ChatBotPersonality);
+        });
+    }
+
+    async createChatBotPersonality(id: string, provider: string, systemPrompt: string): Promise<ChatBotPersonality> {
+        return this.chatBotRepository!.save(new ChatBotPersonality(id, systemPrompt, provider));
+    }
+
+    async getChatBotPersonality(id: string): Promise<ChatBotPersonality | null> {
+        return this.chatBotRepository!.findOne({where: {id}});
     }
 
     async getCustomCommand(guild: string, name: string): Promise<CustomCommand | null> {

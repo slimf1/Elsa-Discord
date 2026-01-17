@@ -14,6 +14,8 @@ export interface IBot {
     repository: IBotRepository;
     isCleaning: boolean;
     snapChatsChannels: Map<string, Message[]>;
+    currentChatBots: Map<string, string>;
+
 
     addListeners(listener: Listener[]): void;
 
@@ -29,6 +31,7 @@ export class Bot implements IBot {
 
     isCleaning = false;
     snapChatsChannels = new Map<string, Message[]>();
+    currentChatBots = new Map<string, string>();
 
     constructor(client: Client,
                 commands: CommandCollection,
