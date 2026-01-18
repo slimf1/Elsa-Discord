@@ -124,6 +124,18 @@ class AIChat extends Command {
     }
 }
 
+class ResetAIChat extends Command {
+    async execute({message}: Context): Promise<void> {
+        conversations.delete(message.channelId);
+        await message.channel.send('AI conversation has been reset for this channel.');
+    }
+    
+    name(): string {
+        return 'reset-ai';
+    }
+}
+
+
 export default {
-    commands: [AIChat]
+    commands: [AIChat, ResetAIChat]
 };
