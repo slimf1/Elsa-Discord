@@ -79,8 +79,8 @@ Fun and utility commands for entertainment.
 | `urban-dictionary [term]` | Urban Dictionary lookup | — |
 | `poll [question]` | Creates a reaction poll | — |
 | `timer [duration]` | Sets a timer | — |
-| `elections [country]` | Election information | — |
-| `lagrange-squares [number]` | Lagrange's four-square theorem | — |
+| `elections [country]` | Bogus election | — |
+| `lagrange-squares [number]` | Lagrange's four-square calculation | — |
 
 ### 🎮 Pokémon Commands
 Interact with Pokémon data and competitive gaming.
@@ -92,7 +92,6 @@ Interact with Pokémon data and competitive gaming.
 | `bdsp-sets` | Pokémon Brilliant Diamond/Shining Pearl competitive sets |
 | `bdsp-tower` | Battle Tower data for BDSP |
 | `bdsp-trainers` | Battle Tower trainer information |
-| `kunc` | Pokémon Scarlet/Violet Tera Type data |
 | `ladder [player]` | Pokémon Showdown ladder stats for a player |
 
 ### 🎯 Valorant Commands
@@ -101,7 +100,6 @@ Competitive gaming integrations.
 | Command | Description |
 | --- | --- |
 | `valorant-rank [player]` | Display player rank and stats |
-| `calls [agent]` | Valorant agent ability callouts |
 
 ### 📝 Custom Commands
 Create and manage server-specific commands.
@@ -133,16 +131,6 @@ src/
 ├── utils/              # Helper utilities
 └── listeners/          # Event listeners
 ```
-
-## Technologies
-
-- **Discord.js v13** - Discord API wrapper
-- **TypeScript** - Type-safe JavaScript
-- **TypeORM** - Object-Relational Mapping with SQLite
-- **Axios** - HTTP client for API requests
-- **Luxon** - DateTime utilities
-- **@pkmn/dex** - Pokémon data library
-- **googletrans** - Translation service
 
 ## Architecture
 
